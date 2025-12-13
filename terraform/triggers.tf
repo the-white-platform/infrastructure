@@ -43,7 +43,6 @@ resource "google_cloudbuild_trigger" "fashion_web_deploy_tag" {
 
   substitutions = {
     _NEXT_PUBLIC_SERVER_URL = var.domain_name != "" ? "https://${var.domain_name}" : google_cloud_run_service.main.status[0].url
-    _ENVIRONMENT            = "production"
   }
 
   service_account = google_service_account.cloud_build.id
@@ -69,7 +68,6 @@ resource "google_cloudbuild_trigger" "fashion_web_deploy_pr" {
 
   substitutions = {
     _NEXT_PUBLIC_SERVER_URL = var.domain_name != "" ? "https://${var.domain_name}" : google_cloud_run_service.main.status[0].url
-    _ENVIRONMENT            = "dev"
   }
 
   service_account = google_service_account.cloud_build.id
@@ -94,7 +92,6 @@ resource "google_cloudbuild_trigger" "fashion_web_deploy_develop" {
 
   substitutions = {
     _NEXT_PUBLIC_SERVER_URL = var.domain_name != "" ? "https://${var.domain_name}" : google_cloud_run_service.main.status[0].url
-    _ENVIRONMENT            = "dev"
   }
 
   service_account = google_service_account.cloud_build.id
@@ -123,7 +120,6 @@ resource "google_cloudbuild_trigger" "fashion_web_deploy_manual" {
 
   substitutions = {
     _NEXT_PUBLIC_SERVER_URL = var.domain_name != "" ? "https://${var.domain_name}" : google_cloud_run_service.main.status[0].url
-    _ENVIRONMENT            = var.environment
   }
 
   service_account = google_service_account.cloud_build.id
