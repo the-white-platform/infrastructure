@@ -23,7 +23,7 @@ variable "service_name" {
 variable "container_image" {
   description = "Container image URL"
   type        = string
-  default     = "gcr.io/PROJECT_ID/fashion-web:latest"
+  default     = "us-docker.pkg.dev/cloudrun/container/hello"
 }
 
 variable "container_port" {
