@@ -76,7 +76,6 @@ resource "google_cloud_run_service" "main" {
         "autoscaling.knative.dev/minScale"      = tostring(var.min_instances)
         "autoscaling.knative.dev/maxScale"      = tostring(var.max_instances)
         "run.googleapis.com/execution-environment" = var.execution_environment
-        "run.googleapis.com/ingress"            = var.ingress
         
         # VPC connector if specified
         "run.googleapis.com/vpc-access-connector" = var.vpc_connector_name != "" ? var.vpc_connector_name : null
@@ -94,6 +93,20 @@ resource "google_cloud_run_service" "main" {
         }
       )
     }
+  }
+
+  metadata {
+    annotations = {
+      "run.googleapis.com/ingress" = var.ingress
+    }
+    
+    labels = merge(
+      var.labels,
+      {
+        environment = var.environment
+        managed-by  = "terraform"
+      }
+    )
   }
 
   lifecycle {
