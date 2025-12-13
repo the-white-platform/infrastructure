@@ -1,11 +1,11 @@
-project_id  = "your-gcp-project-id"
+project_id  = "the-white-dev"
 environment = "dev"
 region      = "europe-north1"
 
 service_name = "fashion-web-dev"
 
 # Container configuration
-container_image = "gcr.io/your-gcp-project-id/fashion-web:latest"
+container_image = "gcr.io/the-white-dev/fashion-web:latest"
 container_port  = 3000
 
 # Resource allocation
