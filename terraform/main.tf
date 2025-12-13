@@ -9,6 +9,7 @@ resource "google_project_service" "required_apis" {
     "vpcaccess.googleapis.com",
     "monitoring.googleapis.com",
     "logging.googleapis.com",
+    "sqladmin.googleapis.com",
   ])
 
   service            = each.value
@@ -51,6 +52,20 @@ resource "google_cloud_run_service" "main" {
           }
         }
 
+        # Auto-inject DATABASE_URI if Cloud SQL is enabled
+        dynamic "env" {
+          for_each = var.enable_cloud_sql ? [1] : []
+          content {
+            name = "DATABASE_URI"
+            value_from {
+              secret_key_ref {
+                name = google_secret_manager_secret.generated_db_uri[0].secret_id
+                key  = "latest"
+              }
+            }
+          }
+        }
+
         # Secrets from Secret Manager
         dynamic "env" {
           for_each = var.secrets
@@ -81,8 +96,8 @@ resource "google_cloud_run_service" "main" {
         "run.googleapis.com/vpc-access-connector" = var.vpc_connector_name != "" ? var.vpc_connector_name : null
         "run.googleapis.com/vpc-access-egress"    = var.vpc_connector_name != "" ? "private-ranges-only" : null
         
-        # Cloud SQL connections if specified
-        "run.googleapis.com/cloudsql-instances" = length(var.cloudsql_instances) > 0 ? join(",", var.cloudsql_instances) : null
+        # Cloud SQL connections
+        "run.googleapis.com/cloudsql-instances" = var.enable_cloud_sql ? google_sql_database_instance.main[0].connection_name : (length(var.cloudsql_instances) > 0 ? join(",", var.cloudsql_instances) : null)
       }
 
       labels = merge(

@@ -36,14 +36,11 @@ env_vars = {
 
 # Secrets from Secret Manager
 secrets = {
-  DATABASE_URI = {
-    secret_name = "DATABASE_URI"
-    version     = "latest"
-  }
   PAYLOAD_SECRET = {
     secret_name = "PAYLOAD_SECRET"
     version     = "latest"
   }
+  # DATABASE_URI is auto-injected by enable_cloud_sql = true
   NEXT_PUBLIC_SERVER_URL = {
     secret_name = "NEXT_PUBLIC_SERVER_URL"
     version     = "latest"

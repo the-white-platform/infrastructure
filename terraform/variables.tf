@@ -130,3 +130,44 @@ variable "execution_environment" {
   type        = string
   default     = "gen2"
 }
+
+# ---------------------------------------------------------------------------------------------------------------------
+# CLOUD SQL CONFIGURATION
+# ---------------------------------------------------------------------------------------------------------------------
+
+variable "enable_cloud_sql" {
+  description = "Enable Cloud SQL instance creation"
+  type        = bool
+  default     = true
+}
+
+variable "db_tier" {
+  description = "The machine type to use for the database (e.g., db-f1-micro, db-custom-1-3840)"
+  type        = string
+  default     = "db-f1-micro" # Cheapest option for dev
+}
+
+variable "db_version" {
+  description = "The database version to use"
+  type        = string
+  default     = "POSTGRES_15"
+}
+
+variable "db_name" {
+  description = "The name of the default database to create"
+  type        = string
+  default     = "fashion_db"
+}
+
+variable "db_user" {
+  description = "The name of the default database user"
+  type        = string
+  default     = "fashion_user"
+}
+
+variable "db_password" {
+  description = "The password for the default database user"
+  type        = string
+  sensitive   = true
+  default     = "" # If empty, a random one will be generated
+}
