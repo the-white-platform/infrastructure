@@ -20,7 +20,7 @@ max_instances = 5
 timeout_seconds = 300
 
 # Access control
-allow_unauthenticated = true
+allow_unauthenticated = false
 
 # Custom domain (optional)
 # domain_name = "staging.thewhite.cool"

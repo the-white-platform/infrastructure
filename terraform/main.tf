@@ -195,7 +195,7 @@ resource "google_monitoring_uptime_check_config" "main" {
     type = "uptime_url"
     labels = {
       project_id = var.project_id
-      host       = var.domain_name != "" ? var.domain_name : google_cloud_run_service.main.status[0].url
+      host       = var.domain_name != "" ? var.domain_name : replace(google_cloud_run_service.main.status[0].url, "/^https?:///", "")
     }
   }
 

@@ -65,7 +65,7 @@ variable "timeout_seconds" {
 variable "allow_unauthenticated" {
   description = "Allow unauthenticated access to the service"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "domain_name" {
