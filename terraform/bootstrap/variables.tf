@@ -8,3 +8,8 @@ variable "region" {
   type        = string
   default     = "europe-north1"
 }
+
+variable "state_bucket_name" {
+  description = "Name of the existing Terraform state bucket"
+  type        = string
+}
