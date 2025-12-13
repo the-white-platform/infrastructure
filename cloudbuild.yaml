@@ -7,18 +7,17 @@ steps:
       - "-c"
       - |
         # Determine environment based on GCP project
-        if [ "$PROJECT_ID" = "the-white-prod" ]; then
-          ENV="prod"
+        if [ "${PROJECT_ID}" = "the-white-prod" ]; then
           echo "🚀 Setting up PROD environment"
-        elif [ "$PROJECT_ID" = "the-white-staging" ]; then
-          ENV="staging"
+          cd terraform/environments/prod
+        elif [ "${PROJECT_ID}" = "the-white-staging" ]; then
           echo "🚀 Setting up STAGING environment"
+          cd terraform/environments/staging
         else
-          ENV="dev"
           echo "🚀 Setting up DEV environment"
+          cd terraform/environments/dev
         fi
 
-        cd terraform/environments/$ENV
         sh setup-env.sh
 
   # 2. Terraform Init
@@ -29,15 +28,14 @@ steps:
       - "-c"
       - |
         # Determine environment based on GCP project
-        if [ "$PROJECT_ID" = "the-white-prod" ]; then
-          ENV="prod"
-        elif [ "$PROJECT_ID" = "the-white-staging" ]; then
-          ENV="staging"
+        if [ "${PROJECT_ID}" = "the-white-prod" ]; then
+          cd terraform/environments/prod
+        elif [ "${PROJECT_ID}" = "the-white-staging" ]; then
+          cd terraform/environments/staging
         else
-          ENV="dev"
+          cd terraform/environments/dev
         fi
 
-        cd terraform/environments/$ENV
         terraform init
 
   # 3. Terraform Plan
@@ -48,15 +46,14 @@ steps:
       - "-c"
       - |
         # Determine environment based on GCP project
-        if [ "$PROJECT_ID" = "the-white-prod" ]; then
-          ENV="prod"
-        elif [ "$PROJECT_ID" = "the-white-staging" ]; then
-          ENV="staging"
+        if [ "${PROJECT_ID}" = "the-white-prod" ]; then
+          cd terraform/environments/prod
+        elif [ "${PROJECT_ID}" = "the-white-staging" ]; then
+          cd terraform/environments/staging
         else
-          ENV="dev"
+          cd terraform/environments/dev
         fi
 
-        cd terraform/environments/$ENV
         terraform plan -out=tfplan
 
   # 4. Terraform Apply
@@ -67,15 +64,14 @@ steps:
       - "-c"
       - |
         # Determine environment based on GCP project
-        if [ "$PROJECT_ID" = "the-white-prod" ]; then
-          ENV="prod"
-        elif [ "$PROJECT_ID" = "the-white-staging" ]; then
-          ENV="staging"
+        if [ "${PROJECT_ID}" = "the-white-prod" ]; then
+          cd terraform/environments/prod
+        elif [ "${PROJECT_ID}" = "the-white-staging" ]; then
+          cd terraform/environments/staging
         else
-          ENV="dev"
+          cd terraform/environments/dev
         fi
 
-        cd terraform/environments/$ENV
         terraform apply -auto-approve tfplan
 
 options:
