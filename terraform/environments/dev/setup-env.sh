@@ -10,6 +10,7 @@ ln -sf ../../main.tf main.tf
 ln -sf ../../variables.tf variables.tf
 ln -sf ../../outputs.tf outputs.tf
 ln -sf ../../versions.tf versions.tf
+ln -sf ../../sql.tf sql.tf
 
 # Copy example tfvars if terraform.tfvars doesn't exist
 if [ ! -f terraform.tfvars ]; then
