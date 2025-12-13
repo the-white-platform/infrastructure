@@ -1,10 +1,10 @@
 steps:
   # 1. Setup Environment
-  - id: 'setup'
-    name: 'hashicorp/terraform:light'
-    entrypoint: 'sh'
+  - id: "setup"
+    name: "hashicorp/terraform:light"
+    entrypoint: "sh"
     args:
-      - '-c'
+      - "-c"
       - |
         if [ "$BRANCH_NAME" = "main" ]; then
           echo "Setting up PROD environment"
@@ -25,11 +25,11 @@ steps:
         fi
 
   # 2. Terraform Init
-  - id: 'tf-init'
-    name: 'hashicorp/terraform:light'
-    entrypoint: 'sh'
+  - id: "tf-init"
+    name: "hashicorp/terraform:light"
+    entrypoint: "sh"
     args:
-      - '-c'
+      - "-c"
       - |
         if [ "$BRANCH_NAME" = "main" ]; then cd terraform/environments/prod;
         elif [ "$BRANCH_NAME" = "staging" ]; then cd terraform/environments/staging;
@@ -38,11 +38,11 @@ steps:
         terraform init
 
   # 3. Terraform Plan
-  - id: 'tf-plan'
-    name: 'hashicorp/terraform:light'
-    entrypoint: 'sh'
+  - id: "tf-plan"
+    name: "hashicorp/terraform:light"
+    entrypoint: "sh"
     args:
-      - '-c'
+      - "-c"
       - |
         if [ "$BRANCH_NAME" = "main" ]; then cd terraform/environments/prod;
         elif [ "$BRANCH_NAME" = "staging" ]; then cd terraform/environments/staging;
@@ -51,11 +51,11 @@ steps:
         terraform plan -out=tfplan
 
   # 4. Terraform Apply (Only on push to specific branches)
-  - id: 'tf-apply'
-    name: 'hashicorp/terraform:light'
-    entrypoint: 'sh'
+  - id: "tf-apply"
+    name: "hashicorp/terraform:light"
+    entrypoint: "sh"
     args:
-      - '-c'
+      - "-c"
       - |
         if [ "$BRANCH_NAME" = "main" ] || [ "$BRANCH_NAME" = "develop" ] || [ "$BRANCH_NAME" = "staging" ]; then
           if [ "$BRANCH_NAME" = "main" ]; then cd terraform/environments/prod;
@@ -69,5 +69,8 @@ steps:
 
 options:
   logging: CLOUD_LOGGING_ONLY
+
+# Run the build using the specific Terraform Service Account we created
+serviceAccount: "projects/${PROJECT_ID}/serviceAccounts/terraform-sa@${PROJECT_ID}.iam.gserviceaccount.com"
 
 timeout: 1200s
