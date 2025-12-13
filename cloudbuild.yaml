@@ -1,0 +1,73 @@
+steps:
+  # 1. Setup Environment
+  - id: 'setup'
+    name: 'hashicorp/terraform:light'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        if [ "$BRANCH_NAME" = "main" ]; then
+          echo "Setting up PROD environment"
+          cd terraform/environments/prod
+          sh setup-env.sh
+        elif [ "$BRANCH_NAME" = "develop" ]; then
+          echo "Setting up DEV environment"
+          cd terraform/environments/dev
+          sh setup-env.sh
+        elif [ "$BRANCH_NAME" = "staging" ]; then
+          echo "Setting up STAGING environment"
+          cd terraform/environments/staging
+          sh setup-env.sh
+        else
+          echo "Setting up DEV environment for Preview"
+          cd terraform/environments/dev
+          sh setup-env.sh
+        fi
+
+  # 2. Terraform Init
+  - id: 'tf-init'
+    name: 'hashicorp/terraform:light'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        if [ "$BRANCH_NAME" = "main" ]; then cd terraform/environments/prod;
+        elif [ "$BRANCH_NAME" = "staging" ]; then cd terraform/environments/staging;
+        else cd terraform/environments/dev; fi
+
+        terraform init
+
+  # 3. Terraform Plan
+  - id: 'tf-plan'
+    name: 'hashicorp/terraform:light'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        if [ "$BRANCH_NAME" = "main" ]; then cd terraform/environments/prod;
+        elif [ "$BRANCH_NAME" = "staging" ]; then cd terraform/environments/staging;
+        else cd terraform/environments/dev; fi
+
+        terraform plan -out=tfplan
+
+  # 4. Terraform Apply (Only on push to specific branches)
+  - id: 'tf-apply'
+    name: 'hashicorp/terraform:light'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        if [ "$BRANCH_NAME" = "main" ] || [ "$BRANCH_NAME" = "develop" ] || [ "$BRANCH_NAME" = "staging" ]; then
+          if [ "$BRANCH_NAME" = "main" ]; then cd terraform/environments/prod;
+          elif [ "$BRANCH_NAME" = "staging" ]; then cd terraform/environments/staging;
+          else cd terraform/environments/dev; fi
+          
+          terraform apply -auto-approve tfplan
+        else
+          echo "Skipping apply for non-deployment branch"
+        fi
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1200s
