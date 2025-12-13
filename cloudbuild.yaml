@@ -1,28 +1,25 @@
 steps:
-  # 1. Setup Environment
+  # 1. Setup Environment (based on PROJECT_ID, not branch)
   - id: "setup"
     name: "hashicorp/terraform:1.9.0"
     entrypoint: "sh"
     args:
       - "-c"
       - |
-        if [ "$BRANCH_NAME" = "main" ]; then
-          echo "Setting up PROD environment"
-          cd terraform/environments/prod
-          sh setup-env.sh
-        elif [ "$BRANCH_NAME" = "develop" ]; then
-          echo "Setting up DEV environment"
-          cd terraform/environments/dev
-          sh setup-env.sh
-        elif [ "$BRANCH_NAME" = "staging" ]; then
-          echo "Setting up STAGING environment"
-          cd terraform/environments/staging
-          sh setup-env.sh
+        # Determine environment based on GCP project
+        if [ "$PROJECT_ID" = "the-white-prod" ]; then
+          ENV="prod"
+          echo "🚀 Setting up PROD environment"
+        elif [ "$PROJECT_ID" = "the-white-staging" ]; then
+          ENV="staging"
+          echo "🚀 Setting up STAGING environment"
         else
-          echo "Setting up DEV environment for Preview"
-          cd terraform/environments/dev
-          sh setup-env.sh
+          ENV="dev"
+          echo "🚀 Setting up DEV environment"
         fi
+
+        cd terraform/environments/$ENV
+        sh setup-env.sh
 
   # 2. Terraform Init
   - id: "tf-init"
@@ -31,10 +28,16 @@ steps:
     args:
       - "-c"
       - |
-        if [ "$BRANCH_NAME" = "main" ]; then cd terraform/environments/prod;
-        elif [ "$BRANCH_NAME" = "staging" ]; then cd terraform/environments/staging;
-        else cd terraform/environments/dev; fi
+        # Determine environment based on GCP project
+        if [ "$PROJECT_ID" = "the-white-prod" ]; then
+          ENV="prod"
+        elif [ "$PROJECT_ID" = "the-white-staging" ]; then
+          ENV="staging"
+        else
+          ENV="dev"
+        fi
 
+        cd terraform/environments/$ENV
         terraform init
 
   # 3. Terraform Plan
@@ -44,28 +47,36 @@ steps:
     args:
       - "-c"
       - |
-        if [ "$BRANCH_NAME" = "main" ]; then cd terraform/environments/prod;
-        elif [ "$BRANCH_NAME" = "staging" ]; then cd terraform/environments/staging;
-        else cd terraform/environments/dev; fi
+        # Determine environment based on GCP project
+        if [ "$PROJECT_ID" = "the-white-prod" ]; then
+          ENV="prod"
+        elif [ "$PROJECT_ID" = "the-white-staging" ]; then
+          ENV="staging"
+        else
+          ENV="dev"
+        fi
 
+        cd terraform/environments/$ENV
         terraform plan -out=tfplan
 
-  # 4. Terraform Apply (Only on push to specific branches)
+  # 4. Terraform Apply
   - id: "tf-apply"
     name: "hashicorp/terraform:1.9.0"
     entrypoint: "sh"
     args:
       - "-c"
       - |
-        if [ "$BRANCH_NAME" = "main" ] || [ "$BRANCH_NAME" = "develop" ] || [ "$BRANCH_NAME" = "staging" ]; then
-          if [ "$BRANCH_NAME" = "main" ]; then cd terraform/environments/prod;
-          elif [ "$BRANCH_NAME" = "staging" ]; then cd terraform/environments/staging;
-          else cd terraform/environments/dev; fi
-          
-          terraform apply -auto-approve tfplan
+        # Determine environment based on GCP project
+        if [ "$PROJECT_ID" = "the-white-prod" ]; then
+          ENV="prod"
+        elif [ "$PROJECT_ID" = "the-white-staging" ]; then
+          ENV="staging"
         else
-          echo "Skipping apply for non-deployment branch"
+          ENV="dev"
         fi
+
+        cd terraform/environments/$ENV
+        terraform apply -auto-approve tfplan
 
 options:
   logging: CLOUD_LOGGING_ONLY
