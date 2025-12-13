@@ -64,44 +64,57 @@ This directory contains Terraform configurations for deploying and managing The 
      --role="roles/editor"
    ```
 
-## 🔧 Setup
+## 🔧 Setup (The "Bootstrap" Way)
 
-### 1. Initialize Terraform Backend
+We use a 2-stage process:
 
-First, create a GCS bucket for Terraform state:
+1. **Bootstrap**: Sets up the foundations (APIs, State Bucket, Service Account)
+2. **Main**: Sets up the application infrastructure
 
-```bash
-./scripts/setup.sh
-```
+### 1. Run Bootstrap
 
-### 2. Configure Environment Variables
-
-Copy the example environment file and update with your values:
+This step is run **once per project** using your personal admin credentials.
 
 ```bash
-cd terraform/environments/dev
+# 1. Login with your personal account
+gcloud auth login
+gcloud config set project YOUR_PROJECT_ID
+
+# 2. Configure Bootstrap
+cd terraform/bootstrap
 cp terraform.tfvars.example terraform.tfvars
-# Edit terraform.tfvars with your configuration
-```
+# Edit terraform.tfvars with your project_id
 
-### 3. Initialize Terraform
-
-```bash
-cd terraform/environments/dev
+# 3. Apply
 terraform init
-```
-
-### 4. Review the Plan
-
-```bash
-terraform plan
-```
-
-### 5. Apply the Configuration
-
-```bash
 terraform apply
 ```
+
+This will output your new **State Bucket Name** and **Service Account Email**.
+
+### 2. Configure Main Infrastructure
+
+Now you use the resources created above to manage the rest.
+
+1. **Update Backend Config**:
+   Edit `terraform/environments/dev/backend.tf` (and others) to use the new bucket name from the bootstrap output.
+
+2. **Configure Environment**:
+
+   ```bash
+   cd terraform/environments/dev
+   cp terraform.tfvars.example terraform.tfvars
+   # Edit terraform.tfvars with:
+   # - project_id = "YOUR_PROJECT_ID"
+   # - Any other settings
+   ```
+
+3. **Deploy Application Infrastructure**:
+   ```bash
+   bash setup-env.sh
+   terraform init
+   terraform apply
+   ```
 
 ## 🌍 Environments
 
