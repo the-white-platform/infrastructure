@@ -28,6 +28,7 @@ resource "google_project_iam_member" "cloud_build_logs_writer" {
 resource "google_cloudbuild_trigger" "fashion_web_deploy" {
   name        = "fashion-web-deploy-${var.environment}"
   description = "Deploy fashion-web app on push to main/staging/develop for ${var.environment}"
+  location    = var.region
 
   github {
     owner = "the-white-platform"

@@ -63,40 +63,5 @@ output "domain_mapping_status" {
 
 output "next_steps" {
   description = "Next steps after deployment"
-  value = var.domain_name != "" ? <<-EOT
-
-  ✅ Cloud Run service deployed successfully!
-
-  📋 To complete domain setup for ${var.domain_name}:
-
-  1. Add DNS CNAME record:
-     Name:  ${var.domain_name}
-     Type:  CNAME
-     Value: ghs.googlehosted.com
-     TTL:   3600
-
-  2. Verify domain ownership (if first time):
-     - Go to: https://console.cloud.google.com/run/domains?project=${var.project_id}
-     - Follow the verification steps
-
-  3. Wait for DNS propagation (can take up to 48 hours, usually 5-10 minutes)
-
-  4. Update NEXT_PUBLIC_SERVER_URL secret:
-     echo -n "https://${var.domain_name}" | gcloud secrets versions add NEXT_PUBLIC_SERVER_URL_${upper(var.environment)} --data-file=-
-
-  5. Test your domain:
-     curl https://${var.domain_name}
-
-  Current Cloud Run URL: ${google_cloud_run_service.main.status[0].url}
-
-  EOT
-  : <<-EOT
-
-  ✅ Cloud Run service deployed successfully!
-
-  Service URL: ${google_cloud_run_service.main.status[0].url}
-
-  To add a custom domain later, set domain_name in terraform.tfvars
-
-  EOT
+  value       = var.domain_name != "" ? "Domain configured: https://${var.domain_name} - Add CNAME record pointing to ghs.googlehosted.com" : "Service deployed at: ${google_cloud_run_service.main.status[0].url}"
 }
