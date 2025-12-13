@@ -23,7 +23,7 @@ timeout_seconds = 300
 allow_unauthenticated = false
 
 # Custom domain
-# domain_name = "thewhite.cool"
+domain_name = "thewhite.cool"
 
 # Monitoring
 enable_monitoring = true
