@@ -63,8 +63,8 @@ resource "google_service_account" "terraform_sa" {
 }
 
 # 4. Grant IAM Roles to the Service Account
-locals {
-  required_roles = [
+resource "google_project_iam_member" "sa_roles" {
+  for_each = toset([
     "roles/editor",                  # Broad access for creating resources
     "roles/run.admin",               # Cloud Run management
     "roles/storage.admin",           # Storage management (for state & assets)
@@ -72,11 +72,7 @@ locals {
     "roles/iam.serviceAccountUser",  # Ability to act as other SAs
     "roles/artifactregistry.admin",  # Manage container images
     "roles/cloudbuild.builds.editor" # Manage builds
-  ]
-}
-
-resource "google_project_iam_member" "sa_roles" {
-  for_each = toset(locals.required_roles)
+  ])
 
   project = var.project_id
   role    = each.key

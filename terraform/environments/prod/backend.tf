@@ -1,6 +1,6 @@
 terraform {
   backend "gcs" {
-    bucket = "the-white-platform-terraform-state-prod"
+    bucket = "the-white-prod-terraform-state"
     prefix = "terraform/state/prod"
   }
 }
