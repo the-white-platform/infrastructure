@@ -60,7 +60,7 @@ echo -e "${GREEN}✅ APIs enabled successfully${NC}"
 # Create GCS buckets for Terraform state
 echo -e "${GREEN}📦 Creating GCS buckets for Terraform state...${NC}"
 
-REGION="us-central1"
+REGION="europe-north1"
 
 # Create buckets for each environment
 for ENV in dev staging prod; do

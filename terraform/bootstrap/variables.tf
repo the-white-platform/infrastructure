@@ -6,5 +6,5 @@ variable "project_id" {
 variable "region" {
   description = "Region for core resources (State bucket, Artifact Registry)"
   type        = string
-  default     = "us-central1"
+  default     = "europe-north1"
 }
