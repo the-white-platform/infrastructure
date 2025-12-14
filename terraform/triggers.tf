@@ -24,6 +24,13 @@ resource "google_project_iam_member" "cloud_build_logs_writer" {
   member  = "serviceAccount:${google_service_account.cloud_build.email}"
 }
 
+# Grant Cloud Build SA access to Secret Manager (needed for build-time secrets)
+resource "google_project_iam_member" "cloud_build_secret_accessor" {
+  project = var.project_id
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.cloud_build.email}"
+}
+
 # Cloud Build Trigger for production (tag-based deployment)
 # This trigger deploys to production when a version tag (e.g., v1.0.0) is created on main branch
 resource "google_cloudbuild_trigger" "fashion_web_deploy_tag" {
