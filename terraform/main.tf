@@ -189,6 +189,7 @@ resource "google_cloud_run_domain_mapping" "main" {
 
   spec {
     route_name = google_cloud_run_service.main.name
+    force_override = true  # Force override if domain is mapped elsewhere
   }
 }
 

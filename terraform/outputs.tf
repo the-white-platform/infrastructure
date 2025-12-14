@@ -53,11 +53,9 @@ output "domain_mapping_status" {
   value = var.domain_name != "" ? {
     domain              = var.domain_name
     cloud_run_url       = google_cloud_run_service.main.status[0].url
-    dns_record_type     = "CNAME"
-    dns_record_name     = var.domain_name
-    dns_record_value    = "ghs.googlehosted.com"
+    dns_records         = google_cloud_run_domain_mapping.main[0].status[0].resource_records
     verification_status = "Check Cloud Run console for domain verification status"
-    instructions        = "Add a CNAME record: ${var.domain_name} -> ghs.googlehosted.com"
+    instructions        = "Add the DNS records shown in dns_records to your DNS provider (Porkbun)"
   } : null
 }
 

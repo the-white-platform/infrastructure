@@ -40,6 +40,7 @@ resource "google_project_iam_member" "cloud_build_artifact_registry_writer" {
 
 # Cloud Build Trigger for production (tag-based deployment)
 # This trigger deploys to production when a version tag (e.g., v1.0.0) is created on main branch
+# Note: Repository must be connected to Cloud Build first
 resource "google_cloudbuild_trigger" "fashion_web_deploy_tag" {
   count       = var.environment == "prod" ? 1 : 0
   name        = "fashion-web-deploy-prod-tag"
@@ -58,6 +59,7 @@ resource "google_cloudbuild_trigger" "fashion_web_deploy_tag" {
 
   substitutions = {
     _NEXT_PUBLIC_SERVER_URL = var.domain_name != "" ? "https://${var.domain_name}" : google_cloud_run_service.main.status[0].url
+    _REGION                 = var.region
   }
 
   service_account = google_service_account.cloud_build.id
@@ -83,6 +85,7 @@ resource "google_cloudbuild_trigger" "fashion_web_deploy_pr" {
 
   substitutions = {
     _NEXT_PUBLIC_SERVER_URL = var.domain_name != "" ? "https://${var.domain_name}" : google_cloud_run_service.main.status[0].url
+    _REGION                 = var.region
   }
 
   service_account = google_service_account.cloud_build.id
@@ -111,6 +114,7 @@ resource "google_cloudbuild_trigger" "fashion_web_deploy_manual" {
 
   substitutions = {
     _NEXT_PUBLIC_SERVER_URL = var.domain_name != "" ? "https://${var.domain_name}" : google_cloud_run_service.main.status[0].url
+    _REGION                 = var.region
   }
 
   service_account = google_service_account.cloud_build.id

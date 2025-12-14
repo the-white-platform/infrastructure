@@ -6,7 +6,7 @@ variable "project_id" {
 variable "region" {
   description = "Region for core resources (State bucket, Artifact Registry)"
   type        = string
-  default     = "europe-north1"
+  default     = "asia-southeast1"  # Singapore - closest to Vietnam
 }
 
 variable "state_bucket_name" {
