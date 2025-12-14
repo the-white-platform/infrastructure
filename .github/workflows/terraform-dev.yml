@@ -1,0 +1,61 @@
+name: Terraform Apply - Dev
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'terraform/**'
+      - '.github/workflows/terraform-dev.yml'
+    # Don't run on tag pushes (those are for prod)
+    tags-ignore:
+      - 'v*'
+
+permissions:
+  contents: read
+  id-token: write # Required for Workload Identity Federation
+
+jobs:
+  terraform-apply-dev:
+    name: Apply Terraform to Dev
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER_DEV }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_DEV }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0"
+
+      - name: Terraform Init - Dev
+        working-directory: terraform/environments/dev
+        run: |
+          terraform init
+
+      - name: Terraform Plan - Dev
+        working-directory: terraform/environments/dev
+        run: |
+          terraform plan -out=tfplan
+
+      - name: Terraform Apply - Dev
+        working-directory: terraform/environments/dev
+        run: |
+          terraform apply -auto-approve tfplan
+
+      - name: Terraform Output
+        working-directory: terraform/environments/dev
+        run: |
+          echo "✅ Terraform apply completed for dev environment"
+          terraform output
+
