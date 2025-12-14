@@ -54,14 +54,16 @@ setup_wif() {
         echo -e "${YELLOW}  ⚠️  Workload Identity Provider already exists, skipping creation${NC}"
     else
         echo -e "${GREEN}  Creating Workload Identity Provider...${NC}"
+        # Use the exact format from Google Cloud documentation for GitHub Actions
+        # Note: attribute-condition is required and must reference assertion.* claims
         gcloud iam workload-identity-pools providers create-oidc "${WORKLOAD_IDENTITY_PROVIDER}" \
             --project="${PROJECT_ID}" \
             --location="global" \
             --workload-identity-pool="${WORKLOAD_IDENTITY_POOL}" \
             --display-name="GitHub Actions Provider" \
-            --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository" \
             --issuer-uri="https://token.actions.githubusercontent.com" \
-            --quiet
+            --attribute-mapping="google.subject=assertion.sub,attribute.actor=assertion.actor,attribute.repository=assertion.repository,attribute.repository_owner=assertion.repository_owner" \
+            --attribute-condition="assertion.repository == '${REPO}'"
     fi
     
     # Get the provider resource name
