@@ -31,6 +31,13 @@ resource "google_project_iam_member" "cloud_build_secret_accessor" {
   member  = "serviceAccount:${google_service_account.cloud_build.email}"
 }
 
+# Grant Cloud Build SA access to Artifact Registry (needed to push Docker images)
+resource "google_project_iam_member" "cloud_build_artifact_registry_writer" {
+  project = var.project_id
+  role    = "roles/artifactregistry.writer"
+  member  = "serviceAccount:${google_service_account.cloud_build.email}"
+}
+
 # Cloud Build Trigger for production (tag-based deployment)
 # This trigger deploys to production when a version tag (e.g., v1.0.0) is created on main branch
 resource "google_cloudbuild_trigger" "fashion_web_deploy_tag" {
