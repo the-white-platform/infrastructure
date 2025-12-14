@@ -10,6 +10,7 @@ resource "google_project_service" "required_apis" {
     "monitoring.googleapis.com",
     "logging.googleapis.com",
     "sqladmin.googleapis.com",
+    "certificatemanager.googleapis.com", # For SSL certificates
   ])
 
   service            = each.value
