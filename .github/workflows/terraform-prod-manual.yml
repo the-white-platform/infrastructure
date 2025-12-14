@@ -1,0 +1,98 @@
+name: Terraform Apply - Prod (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      terraform_action:
+        description: 'Terraform action to perform'
+        required: true
+        default: 'apply'
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+      auto_approve:
+        description: 'Auto-approve (for apply/destroy)'
+        required: false
+        default: false
+        type: boolean
+      confirm_prod:
+        description: 'Type "CONFIRM" to proceed with PRODUCTION'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  id-token: write # Required for Workload Identity Federation
+
+jobs:
+  terraform-manual-prod:
+    name: Manual Terraform - Prod
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Verify Production Confirmation
+        run: |
+          if [ "${{ github.event.inputs.confirm_prod }}" != "CONFIRM" ]; then
+            echo "❌ ERROR: Production confirmation required!"
+            echo "You must type 'CONFIRM' in the confirm_prod field to proceed."
+            exit 1
+          fi
+          echo "✅ Production confirmation verified"
+
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER_PROD }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_PROD }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0"
+
+      - name: Terraform Init - Prod
+        working-directory: terraform/environments/prod
+        run: |
+          terraform init
+
+      - name: Terraform Plan - Prod
+        if: github.event.inputs.terraform_action == 'plan' || github.event.inputs.terraform_action == 'apply'
+        working-directory: terraform/environments/prod
+        run: |
+          terraform plan -out=tfplan
+
+      - name: Terraform Apply - Prod
+        if: github.event.inputs.terraform_action == 'apply'
+        working-directory: terraform/environments/prod
+        run: |
+          if [ "${{ github.event.inputs.auto_approve }}" == "true" ]; then
+            terraform apply -auto-approve tfplan
+          else
+            terraform apply tfplan
+          fi
+
+      - name: Terraform Destroy - Prod
+        if: github.event.inputs.terraform_action == 'destroy'
+        working-directory: terraform/environments/prod
+        run: |
+          if [ "${{ github.event.inputs.auto_approve }}" == "true" ]; then
+            terraform destroy -auto-approve
+          else
+            terraform destroy
+          fi
+
+      - name: Terraform Output
+        if: github.event.inputs.terraform_action == 'apply'
+        working-directory: terraform/environments/prod
+        run: |
+          echo "✅ Terraform ${{ github.event.inputs.terraform_action }} completed for prod environment"
+          terraform output
+

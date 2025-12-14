@@ -1,0 +1,85 @@
+name: Terraform Apply - Dev (Manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      terraform_action:
+        description: 'Terraform action to perform'
+        required: true
+        default: 'apply'
+        type: choice
+        options:
+          - plan
+          - apply
+          - destroy
+      auto_approve:
+        description: 'Auto-approve (for apply/destroy)'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+  id-token: write # Required for Workload Identity Federation
+
+jobs:
+  terraform-manual-dev:
+    name: Manual Terraform - Dev
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER_DEV }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_DEV }}
+
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0"
+
+      - name: Terraform Init - Dev
+        working-directory: terraform/environments/dev
+        run: |
+          terraform init
+
+      - name: Terraform Plan - Dev
+        if: github.event.inputs.terraform_action == 'plan' || github.event.inputs.terraform_action == 'apply'
+        working-directory: terraform/environments/dev
+        run: |
+          terraform plan -out=tfplan
+
+      - name: Terraform Apply - Dev
+        if: github.event.inputs.terraform_action == 'apply'
+        working-directory: terraform/environments/dev
+        run: |
+          if [ "${{ github.event.inputs.auto_approve }}" == "true" ]; then
+            terraform apply -auto-approve tfplan
+          else
+            terraform apply tfplan
+          fi
+
+      - name: Terraform Destroy - Dev
+        if: github.event.inputs.terraform_action == 'destroy'
+        working-directory: terraform/environments/dev
+        run: |
+          if [ "${{ github.event.inputs.auto_approve }}" == "true" ]; then
+            terraform destroy -auto-approve
+          else
+            terraform destroy
+          fi
+
+      - name: Terraform Output
+        if: github.event.inputs.terraform_action == 'apply'
+        working-directory: terraform/environments/dev
+        run: |
+          echo "✅ Terraform ${{ github.event.inputs.terraform_action }} completed for dev environment"
+          terraform output
+
