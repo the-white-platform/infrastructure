@@ -25,10 +25,11 @@ resource "google_project_iam_member" "cloud_build_logs_writer" {
 }
 
 # Cloud Build Trigger for production (tag-based deployment)
+# This trigger deploys to production when a version tag (e.g., v1.0.0) is created on main branch
 resource "google_cloudbuild_trigger" "fashion_web_deploy_tag" {
   count       = var.environment == "prod" ? 1 : 0
   name        = "fashion-web-deploy-prod-tag"
-  description = "Deploy fashion-web to production on tag creation (e.g., v1.0.0)"
+  description = "Deploy fashion-web to production on tag creation (e.g., v1.0.0) after merge to main"
   location    = var.region
 
   github {
@@ -48,11 +49,11 @@ resource "google_cloudbuild_trigger" "fashion_web_deploy_tag" {
   service_account = google_service_account.cloud_build.id
 }
 
-# Cloud Build Trigger for dev (PR-based deployment)
+# Cloud Build Trigger for dev (PR-based deployment to main)
 resource "google_cloudbuild_trigger" "fashion_web_deploy_pr" {
   count       = var.environment == "dev" ? 1 : 0
   name        = "fashion-web-deploy-dev-pr"
-  description = "Deploy fashion-web to dev on PR creation/update"
+  description = "Deploy fashion-web to dev when PR is created/updated targeting main branch"
   location    = var.region
 
   github {
@@ -73,48 +74,24 @@ resource "google_cloudbuild_trigger" "fashion_web_deploy_pr" {
   service_account = google_service_account.cloud_build.id
 }
 
-# Cloud Build Trigger for dev (push to develop branch)
-resource "google_cloudbuild_trigger" "fashion_web_deploy_develop" {
-  count       = var.environment == "dev" ? 1 : 0
-  name        = "fashion-web-deploy-dev-push"
-  description = "Deploy fashion-web to dev on push to develop branch"
-  location    = var.region
-
-  github {
-    owner = "the-white-platform"
-    name  = "fashion-web"
-    push {
-      branch = "^develop$"
-    }
-  }
-
-  filename = "cloudbuild.yaml"
-
-  substitutions = {
-    _NEXT_PUBLIC_SERVER_URL = var.domain_name != "" ? "https://${var.domain_name}" : google_cloud_run_service.main.status[0].url
-  }
-
-  service_account = google_service_account.cloud_build.id
-}
-
 # Manual trigger for both environments
 resource "google_cloudbuild_trigger" "fashion_web_deploy_manual" {
   name        = "fashion-web-deploy-${var.environment}-manual"
-  description = "Manually trigger deployment to ${var.environment}"
+  description = "Manually trigger deployment to ${var.environment} from main branch"
   location    = var.region
   disabled    = false
 
   # Manual triggers don't have a source trigger
   source_to_build {
     uri       = "https://github.com/the-white-platform/fashion-web"
-    ref       = var.environment == "prod" ? "refs/heads/main" : "refs/heads/develop"
+    ref       = "refs/heads/main"  # Always use main branch for manual triggers
     repo_type = "GITHUB"
   }
 
   git_file_source {
     path      = "cloudbuild.yaml"
     uri       = "https://github.com/the-white-platform/fashion-web"
-    revision  = var.environment == "prod" ? "refs/heads/main" : "refs/heads/develop"
+    revision  = "refs/heads/main"  # Always use main branch for manual triggers
     repo_type = "GITHUB"
   }
 
