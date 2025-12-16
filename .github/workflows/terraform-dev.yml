@@ -12,6 +12,12 @@ on:
       - main
     tags-ignore:
       - 'v*'
+    paths-ignore:
+      - '**.md'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - '.github/workflows/create-release.yml'
+      - '.github/workflows/terraform-prod.yml'
 
 concurrency:
   group: terraform-dev-${{ github.event.pull_request.number || github.ref }}

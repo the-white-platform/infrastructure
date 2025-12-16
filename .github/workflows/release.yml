@@ -4,6 +4,11 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**.md'
+      - 'README.md'
+      - 'CHANGELOG.md'
+      - '.github/**'
 
 concurrency:
   group: release-${{ github.ref }}

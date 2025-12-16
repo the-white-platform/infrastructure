@@ -4,6 +4,10 @@ on:
   push:
     tags:
       - 'v*'
+    paths-ignore:
+      - '**.md'
+      - 'README.md'
+      - 'CHANGELOG.md'
 
 concurrency:
   group: terraform-prod-${{ github.ref }}
