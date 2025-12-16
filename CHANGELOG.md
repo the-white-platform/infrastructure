@@ -4,6 +4,44 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### 0.1.8 (2025-12-16)
+
+
+### Features
+
+* add Artifact Registry and Secret Manager permissions for Cloud Build ([0863ecf](https://github.com/the-white-platform/infrastructure/commit/0863ecf2223486e1c57ba942e8206f4766c5b570))
+* add bootstrap module and configure cloud build credentials ([caaae9e](https://github.com/the-white-platform/infrastructure/commit/caaae9e48c194e06c612bfe8941a54a5781ad88c))
+* add Certificate Manager API for SSL certificate management ([e1f57b2](https://github.com/the-white-platform/infrastructure/commit/e1f57b27befb141135cbbd5d36aa4c40993577e5))
+* add cleanup script for Workload Identity Federation and update setup script for attribute mapping ([f1c6996](https://github.com/the-white-platform/infrastructure/commit/f1c6996d341d5baadd9fd128e36f25563aee127d))
+* add managed cloud sql instance and auto-inject connection secret ([ccdf074](https://github.com/the-white-platform/infrastructure/commit/ccdf0748d2b2ffd9c0b27f517e3d4a9afbe97301))
+* add symlinks for sql.tf and triggers.tf, update output message for domain setup ([cdcc913](https://github.com/the-white-platform/infrastructure/commit/cdcc9130e42d143c09378ebccf726f10db8293b5))
+* **ci:** add automatic version management for infrastructure ([ad76b28](https://github.com/the-white-platform/infrastructure/commit/ad76b281b7d4fc63ea6dcb60736fc40855aa0de3))
+* **ci:** add manual terraform workflows and fix setup script ([573a2de](https://github.com/the-white-platform/infrastructure/commit/573a2de4842dba418827be85b1951a5c585500d2))
+* **ci:** add terraform automation workflows for dev and prod ([8554577](https://github.com/the-white-platform/infrastructure/commit/85545773c6906508ec83b25390c9ca343ab8d010))
+* config custom domain thewhite.cool for prod ([21fce6a](https://github.com/the-white-platform/infrastructure/commit/21fce6afcb92bf5cded79a84149373551a77b2c5))
+* implement automated versioning, release workflows, and cross-project IAM ([bc7e973](https://github.com/the-white-platform/infrastructure/commit/bc7e97358e0dbd26c501f7e79096df467ab24603))
+* implement tag-based prod deployment and PR-based dev deployment ([f774d81](https://github.com/the-white-platform/infrastructure/commit/f774d81227d69bf445128acb0e3c607afa6efc3e))
+* Introduce Terraform for GCP deployment, monitoring, and a 2-stage bootstrap setup, updating README instructions. ([ee5f358](https://github.com/the-white-platform/infrastructure/commit/ee5f3585e1b8b1ba548833f2b08ed726a0cd5094))
+* refactor Terraform state management to use existing bucket and add Cloud Build service account permissions ([36ca2b8](https://github.com/the-white-platform/infrastructure/commit/36ca2b8cc350377759113dd8dba740108e0dae97))
+* separate envs ([69dc854](https://github.com/the-white-platform/infrastructure/commit/69dc854dab2b3feefc40813916e67c7cadfba7f5))
+* update project configuration for dev and prod environments, including region and state bucket name changes ([cd22ae5](https://github.com/the-white-platform/infrastructure/commit/cd22ae5caee704281559dbc95a2919ebbbb3760c))
+
+
+### Bug Fixes
+
+* deployment flow ([d03c289](https://github.com/the-white-platform/infrastructure/commit/d03c2899b980b85006b7f137faeb01a251c5384e))
+* disable public access (policy) and fix uptime check host ([333ebc6](https://github.com/the-white-platform/infrastructure/commit/333ebc602f63e9f733487b5f5073e077f0aea933))
+* include sql.tf in environment setup symlinks ([f1e9592](https://github.com/the-white-platform/infrastructure/commit/f1e9592effa4f18ace2d31c544f6a9b170932a6d))
+* move ingress annotation to service metadata ([170c897](https://github.com/the-white-platform/infrastructure/commit/170c897faee76ec773d2ef66b5d8021eaf3da540))
+* remove custom ENV variable to avoid Cloud Build substitution error ([5431997](https://github.com/the-white-platform/infrastructure/commit/5431997f7591629b0e5f2039b221dc6f13bb8b61))
+* remove unused _ENVIRONMENT substitution from triggers ([67f9980](https://github.com/the-white-platform/infrastructure/commit/67f9980e3db4ff608e193afebe8877480ab26ecd))
+* **secret:** grant Cloud Build SA access to Secret Manager ([47a763e](https://github.com/the-white-platform/infrastructure/commit/47a763eed803e2de0f495c49c63b7cfcac38bcb9))
+* update project_id to the-white-dev in all environments ([d7048a0](https://github.com/the-white-platform/infrastructure/commit/d7048a0a0a9286fe3fced6e10dca8750a500d4bc))
+* update region to europe-north1 and ensure buckets exist ([b5c9ba8](https://github.com/the-white-platform/infrastructure/commit/b5c9ba82dab1e67c0e77c8507b8b0791367b5cc0))
+* upgrade terraform version to 1.9.0 to satisfy constraints ([ad8750d](https://github.com/the-white-platform/infrastructure/commit/ad8750d3ea974bb3fbf62d3eae28a6645ff33cdf))
+* use hello-world image for initial infrastructure bootstrap ([e0395f0](https://github.com/the-white-platform/infrastructure/commit/e0395f0d55b5f788e3b629f688d60e0442315d43))
+* use PROJECT_ID instead of BRANCH_NAME for environment detection in Cloud Build ([92ab868](https://github.com/the-white-platform/infrastructure/commit/92ab8688978f776da39f8f9bd5b510cf60ddd13f))
+
 ### [0.1.7](https://github.com/the-white-platform/infrastructure/compare/v0.1.6...v0.1.7) (2025-12-16)
 
 
@@ -123,4 +161,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 [Unreleased]: https://github.com/the-white-platform/infrastructure/compare/v0.0.1...HEAD
 [0.0.1]: https://github.com/the-white-platform/infrastructure/releases/tag/v0.0.1
-
