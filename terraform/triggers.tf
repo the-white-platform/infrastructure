@@ -39,6 +39,7 @@ resource "google_project_iam_member" "cloud_build_artifact_registry_writer" {
 }
 
 # Cloud Build Trigger for production (tag-based deployment)
+# DISABLED: All deployments now happen via GitHub Actions only
 # This trigger deploys to production when a version tag (e.g., v1.0.0) is created on main branch
 # Note: Repository must be connected to Cloud Build first
 resource "google_cloudbuild_trigger" "fashion_web_deploy_tag" {
@@ -46,6 +47,7 @@ resource "google_cloudbuild_trigger" "fashion_web_deploy_tag" {
   name        = "fashion-web-deploy-prod-tag"
   description = "Deploy fashion-web to production on tag creation (e.g., v1.0.0) after merge to main"
   location    = var.region
+  disabled    = true  # Disabled - GitHub Actions handles all deployments
 
   github {
     owner = "the-white-platform"
@@ -66,11 +68,13 @@ resource "google_cloudbuild_trigger" "fashion_web_deploy_tag" {
 }
 
 # Cloud Build Trigger for dev (PR-based deployment to main)
+# DISABLED: All deployments now happen via GitHub Actions only
 resource "google_cloudbuild_trigger" "fashion_web_deploy_pr" {
   count       = var.environment == "dev" ? 1 : 0
   name        = "fashion-web-deploy-dev-pr"
   description = "Deploy fashion-web to dev when PR is created/updated targeting main branch"
   location    = var.region
+  disabled    = true  # Disabled - GitHub Actions handles all deployments
 
   github {
     owner = "the-white-platform"
@@ -92,11 +96,12 @@ resource "google_cloudbuild_trigger" "fashion_web_deploy_pr" {
 }
 
 # Manual trigger for both environments
+# DISABLED: All deployments now happen via GitHub Actions only
 resource "google_cloudbuild_trigger" "fashion_web_deploy_manual" {
   name        = "fashion-web-deploy-${var.environment}-manual"
   description = "Manually trigger deployment to ${var.environment} from main branch"
   location    = var.region
-  disabled    = false
+  disabled    = true  # Disabled - GitHub Actions handles all deployments
 
   # Manual triggers don't have a source trigger
   source_to_build {

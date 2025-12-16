@@ -1,25 +1,31 @@
-name: Terraform Apply - Dev
+name: Terraform - Dev
 
 on:
-  push:
+  pull_request:
     branches:
       - main
     paths:
       - 'terraform/**'
       - '.github/workflows/terraform-dev.yml'
-    # Don't run on tag pushes (those are for prod)
+  push:
+    branches:
+      - main
     tags-ignore:
       - 'v*'
 
+concurrency:
+  group: terraform-dev-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
-  id-token: write # Required for Workload Identity Federation
+  id-token: write
 
 jobs:
-  terraform-apply-dev:
-    name: Apply Terraform to Dev
+  terraform-plan-pr:
+    name: Terraform Plan (PR)
     runs-on: ubuntu-latest
-    
+    if: github.event_name == 'pull_request'
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -38,24 +44,80 @@ jobs:
         with:
           terraform_version: "1.9.0"
 
-      - name: Terraform Init - Dev
+      - name: Terraform Init
         working-directory: terraform/environments/dev
-        run: |
-          terraform init
+        run: terraform init
 
-      - name: Terraform Plan - Dev
+      - name: Terraform Plan
         working-directory: terraform/environments/dev
-        run: |
-          terraform plan -out=tfplan
+        run: terraform plan -var-file=terraform.tfvars
 
-      - name: Terraform Apply - Dev
-        working-directory: terraform/environments/dev
+  terraform-apply:
+    name: Terraform Plan & Apply (Release)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check if release commit
+        id: check
         run: |
-          terraform apply -auto-approve tfplan
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          echo "Commit: $COMMIT_MSG"
+          if echo "$COMMIT_MSG" | grep -qE "^chore\(release\):"; then
+            echo "is_release=true" >> $GITHUB_OUTPUT
+            echo "✅ Release commit detected"
+          else
+            echo "is_release=false" >> $GITHUB_OUTPUT
+            echo "ℹ️  Not a release commit, skipping"
+          fi
+
+      - name: Authenticate to Google Cloud
+        if: steps.check.outputs.is_release == 'true'
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER_DEV }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_DEV }}
+
+      - name: Set up Cloud SDK
+        if: steps.check.outputs.is_release == 'true'
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Setup Terraform
+        if: steps.check.outputs.is_release == 'true'
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0"
+
+      - name: Terraform Init
+        if: steps.check.outputs.is_release == 'true'
+        working-directory: terraform/environments/dev
+        run: terraform init
+
+      - name: Remove stale lock
+        if: steps.check.outputs.is_release == 'true'
+        working-directory: terraform/environments/dev
+        continue-on-error: true
+        run: |
+          LOCK_FILE="gs://the-white-platform-terraform-state-dev-481217/terraform/state/dev/default.tflock"
+          if gsutil stat "$LOCK_FILE" &>/dev/null; then
+            gsutil rm "$LOCK_FILE" 2>/dev/null && echo "✅ Stale lock removed" || echo "ℹ️  Lock in use"
+          fi
+
+      - name: Terraform Plan
+        if: steps.check.outputs.is_release == 'true'
+        working-directory: terraform/environments/dev
+        run: terraform plan -var-file=terraform.tfvars -out=tfplan
+
+      - name: Terraform Apply
+        if: steps.check.outputs.is_release == 'true'
+        working-directory: terraform/environments/dev
+        run: terraform apply -auto-approve tfplan
 
       - name: Terraform Output
+        if: steps.check.outputs.is_release == 'true'
         working-directory: terraform/environments/dev
-        run: |
-          echo "✅ Terraform apply completed for dev environment"
-          terraform output
-
+        run: terraform output

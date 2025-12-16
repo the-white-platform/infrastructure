@@ -18,6 +18,10 @@ on:
         default: false
         type: boolean
 
+concurrency:
+  group: terraform-manual-dev-${{ github.run_id }}
+  cancel-in-progress: false  # Don't cancel manual runs - user initiated
+
 permissions:
   contents: read
   id-token: write # Required for Workload Identity Federation

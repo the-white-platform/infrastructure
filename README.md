@@ -256,3 +256,4 @@ When making infrastructure changes:
 ## 📄 License
 
 This infrastructure configuration is part of The White Platform project.
+# Trigger release
