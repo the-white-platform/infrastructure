@@ -14,7 +14,34 @@ permissions:
   id-token: write
 
 jobs:
+  check-skip:
+    name: Check if CI should be skipped
+    runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.check.outputs.skip }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Check commit message
+        id: check
+        run: |
+          # For tag pushes, check the commit message of the tag
+          TAG_SHA=$(git rev-parse ${{ github.ref_name }})
+          COMMIT_MSG=$(git log -1 --pretty=%B $TAG_SHA)
+          if echo "$COMMIT_MSG" | grep -qiE "\[skip ci\]|\[ci skip\]|\[skip actions\]|\[actions skip\]"; then
+            echo "skip=true" >> $GITHUB_OUTPUT
+            echo "⏭️  CI/CD skipped due to commit message"
+          else
+            echo "skip=false" >> $GITHUB_OUTPUT
+            echo "✅ CI/CD will run"
+          fi
+
   terraform-apply:
+    needs: check-skip
+    if: needs.check-skip.outputs.skip != 'true'
     name: Terraform Apply
     runs-on: ubuntu-latest
     steps:

@@ -209,6 +209,19 @@ The infrastructure integrates with Cloud Build for automated deployments.
 3. **Staging Branch**: Deploys to the **Staging** environment.
 4. **Main Branch**: Deploys to the **Production** environment.
 
+#### Skip CI/CD
+
+To skip CI/CD workflows (e.g., when updating documentation), include one of these in your commit message:
+- `[skip ci]`
+- `[ci skip]`
+- `[skip actions]`
+- `[actions skip]`
+
+Example:
+```bash
+git commit -m "docs: update README [skip ci]"
+```
+
 ## 📊 Monitoring
 
 Access monitoring dashboards:
