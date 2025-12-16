@@ -8,6 +8,8 @@ on:
       - '**.md'
       - 'README.md'
       - 'CHANGELOG.md'
+      - 'package.json'
+      - 'package-lock.json'
       - '.github/**'
 
 concurrency:
