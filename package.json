@@ -1,6 +1,6 @@
 {
   "name": "the-white-infrastructure",
-  "version": "0.2.10",
+  "version": "0.2.11",
   "description": "Infrastructure as Code for The White Platform",
   "license": "MIT",
   "type": "module",
@@ -15,4 +15,3 @@
     "standard-version": "^9.5.0"
   }
 }
-
