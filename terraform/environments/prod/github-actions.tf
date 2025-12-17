@@ -134,6 +134,13 @@ resource "google_project_iam_member" "github_actions_service_account_admin" {
   member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
 }
 
+# Allow getting access tokens (needed for GCS bucket access for Terraform state)
+resource "google_project_iam_member" "github_actions_service_account_token_creator" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountTokenCreator"
+  member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
+}
+
 # Allow GitHub Actions (via WIF) to impersonate this service account
 resource "google_service_account_iam_member" "github_actions_wif_binding" {
   service_account_id = google_service_account.github_actions_deployer.name

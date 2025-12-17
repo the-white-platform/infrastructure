@@ -40,6 +40,7 @@ ROLES=(
     "roles/storage.admin"
     "roles/iam.workloadIdentityPoolAdmin"
     "roles/iam.serviceAccountAdmin"
+    "roles/iam.serviceAccountTokenCreator"
 )
 
 for ROLE in "${ROLES[@]}"; do
