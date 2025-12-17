@@ -113,6 +113,13 @@ resource "google_project_iam_member" "github_actions_storage_admin" {
   member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
 }
 
+# Allow managing Workload Identity Pools (needed for WIF resources)
+resource "google_project_iam_member" "github_actions_iam_admin" {
+  project = var.project_id
+  role    = "roles/iam.workloadIdentityPoolAdmin"
+  member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
+}
+
 # Allow GitHub Actions (via WIF) to impersonate this service account
 resource "google_service_account_iam_member" "github_actions_wif_binding" {
   service_account_id = google_service_account.github_actions_deployer.name
