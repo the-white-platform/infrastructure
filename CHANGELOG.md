@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### [0.2.8](https://github.com/the-white-platform/infrastructure/compare/v0.2.7...v0.2.8) (2025-12-17)
+
+
+### Bug Fixes
+
+* add roles/iam.serviceAccountTokenCreator for GCS state access ([d9d98fe](https://github.com/the-white-platform/infrastructure/commit/d9d98fe0e825e68fc57c265e684f07af84fe0798))
+
 ### [0.2.7](https://github.com/the-white-platform/infrastructure/compare/v0.2.6...v0.2.7) (2025-12-17)
 
 
