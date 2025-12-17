@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### [0.2.7](https://github.com/the-white-platform/infrastructure/compare/v0.2.6...v0.2.7) (2025-12-17)
+
+
+### Bug Fixes
+
+* ignore project field changes in WIF provider lifecycle ([312e4e9](https://github.com/the-white-platform/infrastructure/commit/312e4e94bfb5307955de981f1e75cbe07e6b202b))
+* use terraform state list instead of state show for import checks ([3a7b632](https://github.com/the-white-platform/infrastructure/commit/3a7b63292a5806c315f8e4abdf538d464bb68d25))
+
 ### [0.2.6](https://github.com/the-white-platform/infrastructure/compare/v0.2.5...v0.2.6) (2025-12-17)
 
 
