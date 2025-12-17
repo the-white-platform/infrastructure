@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### [0.2.5](https://github.com/the-white-platform/infrastructure/compare/v0.2.4...v0.2.5) (2025-12-17)
+
+
+### Bug Fixes
+
+* add roles/iam.serviceAccountAdmin for managing service account IAM ([979db51](https://github.com/the-white-platform/infrastructure/commit/979db51013f8cc44c2a419445ab4ed2de7dec364))
+
 ### [0.2.4](https://github.com/the-white-platform/infrastructure/compare/v0.2.3...v0.2.4) (2025-12-17)
 
 
