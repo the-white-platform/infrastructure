@@ -101,8 +101,8 @@ jobs:
             --location="global" \
             --format="value(name)" > /dev/null 2>&1; then
             echo "✅ Pool exists in GCP: $POOL_NAME"
-            # Check if already in state
-            if terraform state show google_iam_workload_identity_pool.github_actions_pool > /dev/null 2>&1; then
+            # Check if already in state - use state list which is more reliable
+            if terraform state list | grep -q "google_iam_workload_identity_pool.github_actions_pool"; then
               echo "ℹ️  Pool already in Terraform state"
             else
               echo "📥 Importing pool into Terraform state..."
@@ -125,8 +125,8 @@ jobs:
             --workload-identity-pool="$POOL_ID" \
             --format="value(name)" > /dev/null 2>&1; then
             echo "✅ Provider exists in GCP: $PROVIDER_NAME"
-            # Check if already in state
-            if terraform state show google_iam_workload_identity_pool_provider.github_actions_provider > /dev/null 2>&1; then
+            # Check if already in state - use state list which is more reliable
+            if terraform state list | grep -q "google_iam_workload_identity_pool_provider.github_actions_provider"; then
               echo "ℹ️  Provider already in Terraform state"
             else
               echo "📥 Importing provider into Terraform state..."
