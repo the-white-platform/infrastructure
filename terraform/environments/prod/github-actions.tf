@@ -14,6 +14,13 @@ resource "google_iam_workload_identity_pool" "github_actions_pool" {
   display_name              = "GitHub Actions Pool"
   description               = "Pool for GitHub Actions to authenticate to GCP"
   disabled                  = false
+
+  lifecycle {
+    create_before_destroy = true
+    # Ignore project field changes - WIF resources use project numbers in IDs
+    # but Terraform config uses project IDs, causing false replacement plans
+    ignore_changes = [project]
+  }
 }
 
 # Workload Identity Provider for GitHub Actions
