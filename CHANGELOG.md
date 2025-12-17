@@ -4,6 +4,16 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### [0.2.1](https://github.com/the-white-platform/infrastructure/compare/v0.2.0...v0.2.1) (2025-12-17)
+
+
+### Bug Fixes
+
+* add Terraform permissions to GitHub Actions service accounts ([3ed4331](https://github.com/the-white-platform/infrastructure/commit/3ed4331e5588cc0692759d0dabd26d077ff5c7fd))
+* add WIF import step to PR plan job and create_credentials_file to release auth ([0c6c331](https://github.com/the-white-platform/infrastructure/commit/0c6c3312c71d754860d6481abc68c6e8d63d70c4))
+* improve WIF import step in dev workflow with better error visibility ([0299739](https://github.com/the-white-platform/infrastructure/commit/0299739aa4c0fec47c4b5dfde3ffd7e91d2f30d0))
+* improve WIF import step with better error visibility and state checks ([41811e8](https://github.com/the-white-platform/infrastructure/commit/41811e8d8db02e566a03b161d751e9346cf3c6f9))
+
 ## [0.2.0](https://github.com/the-white-platform/infrastructure/compare/v0.1.2...v0.2.0) (2025-12-17)
 
 
