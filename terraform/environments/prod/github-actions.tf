@@ -114,9 +114,10 @@ resource "google_project_iam_member" "github_actions_storage_admin" {
 }
 
 # Allow managing Workload Identity Pools (needed for WIF resources)
+# Using iam.admin for full IAM permissions including WIF pools
 resource "google_project_iam_member" "github_actions_iam_admin" {
   project = var.project_id
-  role    = "roles/iam.workloadIdentityPoolAdmin"
+  role    = "roles/iam.admin"
   member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
 }
 
