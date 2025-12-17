@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### [0.2.9](https://github.com/the-white-platform/infrastructure/compare/v0.2.8...v0.2.9) (2025-12-17)
+
+
+### Bug Fixes
+
+* add service account self-permission for token creator ([78e9fa0](https://github.com/the-white-platform/infrastructure/commit/78e9fa00e9593578d56e92f17a35b536300bca6d))
+* improve pool import logic and add service account self-permission ([50ddd0a](https://github.com/the-white-platform/infrastructure/commit/50ddd0a17324012e64a5b6c73887a3a21e69f3e0))
+
 ### [0.2.8](https://github.com/the-white-platform/infrastructure/compare/v0.2.7...v0.2.8) (2025-12-17)
 
 
