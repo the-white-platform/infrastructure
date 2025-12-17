@@ -1,0 +1,86 @@
+# GitHub Actions service account and WIF configuration for fashion-web (PROD)
+# This allows GitHub Actions to deploy fashion-web using Workload Identity Federation
+
+# Data source to get project info (needed for project number)
+data "google_project" "project" {
+  project_id = var.project_id
+}
+
+# Workload Identity Pool for GitHub Actions
+# Note: These resources were manually created and will be imported into Terraform state
+resource "google_iam_workload_identity_pool" "github_actions_pool" {
+  project                   = var.project_id
+  workload_identity_pool_id = "github-pool"
+  display_name              = "GitHub Actions Pool"
+  description               = "Pool for GitHub Actions to authenticate to GCP"
+  disabled                  = false
+}
+
+# Workload Identity Provider for GitHub Actions
+resource "google_iam_workload_identity_pool_provider" "github_actions_provider" {
+  project                            = var.project_id
+  workload_identity_pool_id          = google_iam_workload_identity_pool.github_actions_pool.workload_identity_pool_id
+  workload_identity_pool_provider_id = "github-provider"
+  display_name                       = "GitHub Actions Provider"
+  description                        = "OIDC provider for GitHub Actions"
+  disabled                           = false
+
+  attribute_mapping = {
+    "google.subject"             = "assertion.sub"
+    "attribute.actor"            = "assertion.actor"
+    "attribute.repository"       = "assertion.repository"
+    "attribute.repository_owner" = "assertion.repository_owner"
+  }
+
+  attribute_condition = "assertion.repository_owner == 'the-white-platform'"
+
+  oidc {
+    issuer_uri = "https://token.actions.githubusercontent.com"
+  }
+}
+
+locals {
+  wif_pool_name     = google_iam_workload_identity_pool.github_actions_pool.name
+  wif_provider_name = google_iam_workload_identity_pool_provider.github_actions_provider.name
+}
+
+# Service account for GitHub Actions to deploy fashion-web (PROD)
+resource "google_service_account" "github_actions_deployer" {
+  account_id   = "github-actions-deployer"
+  display_name = "GitHub Actions Deployer (fashion-web)"
+  description  = "Service account for GitHub Actions to deploy fashion-web to production"
+  project      = var.project_id
+}
+
+# IAM roles for GitHub Actions service account (PROD)
+# Allow pushing Docker images to Artifact Registry
+resource "google_project_iam_member" "github_actions_artifact_writer" {
+  project = var.project_id
+  role    = "roles/artifactregistry.writer"
+  member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
+}
+
+# Allow deploying to Cloud Run
+resource "google_project_iam_member" "github_actions_run_admin" {
+  project = var.project_id
+  role    = "roles/run.admin"
+  member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
+}
+
+# Allow using service accounts (needed for Cloud Run deployment)
+resource "google_project_iam_member" "github_actions_service_account_user" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountUser"
+  member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
+}
+
+# Allow GitHub Actions (via WIF) to impersonate this service account
+resource "google_service_account_iam_member" "github_actions_wif_binding" {
+  service_account_id = google_service_account.github_actions_deployer.name
+  role               = "roles/iam.workloadIdentityUser"
+  member             = "principalSet://iam.googleapis.com/${local.wif_pool_name}/attribute.repository_owner/the-white-platform"
+}
+
+# Note: WIF pool and provider are now managed by Terraform
+# This ensures the attribute mapping and condition are correctly set
+

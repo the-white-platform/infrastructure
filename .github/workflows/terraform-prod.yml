@@ -82,6 +82,38 @@ jobs:
             gsutil rm "$LOCK_FILE" 2>/dev/null && echo "✅ Stale lock removed" || echo "ℹ️  Lock in use"
           fi
 
+      - name: Import existing WIF resources if not in state
+        working-directory: terraform/environments/prod
+        continue-on-error: true
+        run: |
+          PROJECT_ID="the-white-prod-481217"
+          POOL_ID="github-pool"
+          PROVIDER_ID="github-provider"
+          
+          # Get project number
+          PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
+          
+          # Import pool if it exists and not in state
+          POOL_NAME="projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_ID}"
+          if gcloud iam workload-identity-pools describe "$POOL_ID" \
+            --project="$PROJECT_ID" \
+            --location="global" \
+            --format="value(name)" > /dev/null 2>&1; then
+            terraform import google_iam_workload_identity_pool.github_actions_pool "$POOL_NAME" 2>/dev/null || \
+              echo "ℹ️  Pool already in state or import failed"
+          fi
+          
+          # Import provider if it exists and not in state
+          PROVIDER_NAME="projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_ID}/providers/${PROVIDER_ID}"
+          if gcloud iam workload-identity-pools providers describe "$PROVIDER_ID" \
+            --project="$PROJECT_ID" \
+            --location="global" \
+            --workload-identity-pool="$POOL_ID" \
+            --format="value(name)" > /dev/null 2>&1; then
+            terraform import google_iam_workload_identity_pool_provider.github_actions_provider "$PROVIDER_NAME" 2>/dev/null || \
+              echo "ℹ️  Provider already in state or import failed"
+          fi
+
       - name: Terraform Plan
         working-directory: terraform/environments/prod
         run: terraform plan -var-file=terraform.tfvars -out=tfplan
