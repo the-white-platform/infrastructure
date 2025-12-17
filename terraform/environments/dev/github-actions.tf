@@ -1,4 +1,4 @@
-# GitHub Actions service account and WIF configuration for fashion-web (PROD)
+# GitHub Actions service account and WIF configuration for fashion-web
 # This allows GitHub Actions to deploy fashion-web using Workload Identity Federation
 
 # Data source to get project info (needed for project number)
@@ -7,7 +7,6 @@ data "google_project" "project" {
 }
 
 # Workload Identity Pool for GitHub Actions
-# Note: These resources were manually created and will be imported into Terraform state
 resource "google_iam_workload_identity_pool" "github_actions_pool" {
   project                   = var.project_id
   workload_identity_pool_id = "github-pool"
@@ -37,6 +36,10 @@ resource "google_iam_workload_identity_pool_provider" "github_actions_provider" 
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
   }
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 locals {
@@ -44,15 +47,15 @@ locals {
   wif_provider_name = google_iam_workload_identity_pool_provider.github_actions_provider.name
 }
 
-# Service account for GitHub Actions to deploy fashion-web (PROD)
+# Service account for GitHub Actions to deploy fashion-web
 resource "google_service_account" "github_actions_deployer" {
   account_id   = "github-actions-deployer"
   display_name = "GitHub Actions Deployer (fashion-web)"
-  description  = "Service account for GitHub Actions to deploy fashion-web to production"
+  description  = "Service account for GitHub Actions to build and deploy fashion-web"
   project      = var.project_id
 }
 
-# IAM roles for GitHub Actions service account (PROD)
+# IAM roles for GitHub Actions service account
 # This service account is used by GitHub Actions via WIF to run Terraform
 # It needs broad permissions to manage infrastructure
 
@@ -114,6 +117,7 @@ resource "google_project_iam_member" "github_actions_storage_admin" {
 }
 
 # Allow GitHub Actions (via WIF) to impersonate this service account
+# This binds the WIF principal to the service account
 resource "google_service_account_iam_member" "github_actions_wif_binding" {
   service_account_id = google_service_account.github_actions_deployer.name
   role               = "roles/iam.workloadIdentityUser"
