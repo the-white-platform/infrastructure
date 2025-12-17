@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### [0.2.10](https://github.com/the-white-platform/infrastructure/compare/v0.2.9...v0.2.10) (2025-12-17)
+
+
+### Bug Fixes
+
+* add lifecycle ignore_changes for pool project field ([8caca0a](https://github.com/the-white-platform/infrastructure/commit/8caca0a03f15bf8a2dbcb38d98761d30877cb074))
+* add lifecycle ignore_changes for pool project field in dev ([e7521d9](https://github.com/the-white-platform/infrastructure/commit/e7521d915576fae4a963579454a22b291e84f6db))
+
 ### [0.2.9](https://github.com/the-white-platform/infrastructure/compare/v0.2.8...v0.2.9) (2025-12-17)
 
 
