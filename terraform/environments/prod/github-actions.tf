@@ -39,12 +39,10 @@ resource "google_iam_workload_identity_pool_provider" "github_actions_provider" 
   }
 
   lifecycle {
-    ignore_changes = [
-      # Ignore changes to these attributes if they were manually configured
-      # This prevents Terraform from trying to recreate the resource
-      attribute_mapping,
-      attribute_condition,
-    ]
+    create_before_destroy = true
+    # Ignore project field changes - WIF resources use project numbers in IDs
+    # but Terraform config uses project IDs, causing false replacement plans
+    ignore_changes = [project]
   }
 }
 
