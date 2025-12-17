@@ -53,6 +53,7 @@ jobs:
         with:
           workload_identity_provider: ${{ secrets.WIF_PROVIDER_PROD }}
           service_account: ${{ secrets.WIF_SERVICE_ACCOUNT_PROD }}
+          create_credentials_file: true
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
@@ -99,4 +100,5 @@ jobs:
         run: |
           echo "✅ Terraform ${{ github.event.inputs.terraform_action }} completed for prod environment"
           terraform output
+
 
