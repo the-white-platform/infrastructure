@@ -134,10 +134,19 @@ resource "google_project_iam_member" "github_actions_service_account_admin" {
 }
 
 # Allow getting access tokens (needed for GCS bucket access for Terraform state)
+# Grant at project level
 resource "google_project_iam_member" "github_actions_service_account_token_creator" {
   project = var.project_id
   role    = "roles/iam.serviceAccountTokenCreator"
   member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
+}
+
+# Grant service account permission to get access tokens for itself
+# This is needed for the service account to access GCS buckets
+resource "google_service_account_iam_member" "github_actions_self_token_creator" {
+  service_account_id = google_service_account.github_actions_deployer.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:${google_service_account.github_actions_deployer.email}"
 }
 
 # Allow GitHub Actions (via WIF) to impersonate this service account
