@@ -4,6 +4,15 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### [0.2.6](https://github.com/the-white-platform/infrastructure/compare/v0.2.5...v0.2.6) (2025-12-17)
+
+
+### Bug Fixes
+
+* ensure WIF provider import actually succeeds ([ed6a949](https://github.com/the-white-platform/infrastructure/commit/ed6a949fcfc5b4a700c534eda4602efcc092b896))
+* improve WIF provider import error handling ([d5307df](https://github.com/the-white-platform/infrastructure/commit/d5307dff2865d78efcb18146d251ca7d60e0ecb8))
+* improve WIF provider import error handling in dev workflow ([395a329](https://github.com/the-white-platform/infrastructure/commit/395a32919064deeeffde3a6b9b3a9b6bdcdc2bfd))
+
 ### [0.2.5](https://github.com/the-white-platform/infrastructure/compare/v0.2.4...v0.2.5) (2025-12-17)
 
 
