@@ -37,6 +37,15 @@ resource "google_iam_workload_identity_pool_provider" "github_actions_provider" 
   oidc {
     issuer_uri = "https://token.actions.githubusercontent.com"
   }
+
+  lifecycle {
+    ignore_changes = [
+      # Ignore changes to these attributes if they were manually configured
+      # This prevents Terraform from trying to recreate the resource
+      attribute_mapping,
+      attribute_condition,
+    ]
+  }
 }
 
 locals {

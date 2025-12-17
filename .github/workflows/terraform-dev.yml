@@ -201,7 +201,6 @@ jobs:
         working-directory: terraform/environments/dev
         continue-on-error: true
         run: |
-          set -e
           PROJECT_ID="the-white-dev-481217"
           POOL_ID="github-pool"
           PROVIDER_ID="github-provider"
@@ -222,8 +221,12 @@ jobs:
               echo "ℹ️  Pool already in Terraform state"
             else
               echo "📥 Importing pool into Terraform state..."
-              terraform import google_iam_workload_identity_pool.github_actions_pool "$POOL_NAME" || \
-                echo "⚠️  Pool import failed (may already be in state)"
+              terraform import google_iam_workload_identity_pool.github_actions_pool "$POOL_NAME" 2>&1
+              if [ $? -eq 0 ]; then
+                echo "✅ Pool imported successfully"
+              else
+                echo "⚠️  Pool import failed, but continuing..."
+              fi
             fi
           else
             echo "ℹ️  Pool does not exist in GCP, will be created by Terraform"
@@ -242,12 +245,20 @@ jobs:
               echo "ℹ️  Provider already in Terraform state"
             else
               echo "📥 Importing provider into Terraform state..."
-              if terraform import google_iam_workload_identity_pool_provider.github_actions_provider "$PROVIDER_NAME" 2>&1; then
+              IMPORT_OUTPUT=$(terraform import google_iam_workload_identity_pool_provider.github_actions_provider "$PROVIDER_NAME" 2>&1)
+              IMPORT_EXIT=$?
+              echo "$IMPORT_OUTPUT"
+              if [ $IMPORT_EXIT -eq 0 ]; then
                 echo "✅ Provider imported successfully"
               else
-                echo "⚠️  Provider import failed, checking if it's already in state..."
-                # Try to refresh state to see if it's there
-                terraform refresh -target=google_iam_workload_identity_pool_provider.github_actions_provider 2>&1 || true
+                # If import fails with "already in state" error, that's actually OK
+                if echo "$IMPORT_OUTPUT" | grep -q "already managed"; then
+                  echo "ℹ️  Provider already managed by Terraform"
+                else
+                  echo "❌ Provider import failed. Error: $IMPORT_OUTPUT"
+                  echo "Attempting to verify state..."
+                  terraform state list | grep github_actions_provider || echo "Provider not in state"
+                fi
               fi
             fi
           else

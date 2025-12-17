@@ -39,6 +39,8 @@ resource "google_iam_workload_identity_pool_provider" "github_actions_provider" 
 
   lifecycle {
     create_before_destroy = true
+    # Prevent recreation if resource already exists but isn't in state
+    # The import step should handle bringing it into state
   }
 }
 
