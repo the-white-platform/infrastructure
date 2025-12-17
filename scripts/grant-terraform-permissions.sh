@@ -38,7 +38,7 @@ ROLES=(
     "roles/monitoring.admin"
     "roles/resourcemanager.projectIamAdmin"
     "roles/storage.admin"
-    "roles/iam.admin"
+    "roles/iam.workloadIdentityPoolAdmin"
 )
 
 for ROLE in "${ROLES[@]}"; do
