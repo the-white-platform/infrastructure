@@ -127,3 +127,4 @@ cat key.json | base64
 
 **Note**: Workload Identity Federation is more secure and recommended.
 
+

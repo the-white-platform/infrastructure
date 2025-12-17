@@ -5,12 +5,14 @@ resource "google_project_service" "required_apis" {
     "cloudbuild.googleapis.com",
     "secretmanager.googleapis.com",
     "containerregistry.googleapis.com",
+    "artifactregistry.googleapis.com", # For Docker image storage
     "compute.googleapis.com",
     "vpcaccess.googleapis.com",
     "monitoring.googleapis.com",
     "logging.googleapis.com",
     "sqladmin.googleapis.com",
     "certificatemanager.googleapis.com", # For SSL certificates
+    "iam.googleapis.com",                # For Workload Identity Federation
   ])
 
   service            = each.value

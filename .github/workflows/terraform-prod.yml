@@ -96,25 +96,36 @@ jobs:
           
           # Check if pool exists in GCP
           POOL_NAME="projects/${PROJECT_NUMBER}/locations/global/workloadIdentityPools/${POOL_ID}"
-          if gcloud iam workload-identity-pools describe "$POOL_ID" \
+          POOL_STATE=$(gcloud iam workload-identity-pools describe "$POOL_ID" \
             --project="$PROJECT_ID" \
             --location="global" \
-            --format="value(name)" > /dev/null 2>&1; then
-            echo "✅ Pool exists in GCP: $POOL_NAME"
+            --format="value(state)" 2>/dev/null || echo "NOT_FOUND")
+          
+          if [ "$POOL_STATE" = "ACTIVE" ] || [ "$POOL_STATE" = "DELETED" ]; then
+            echo "✅ Pool exists in GCP: $POOL_NAME (state: $POOL_STATE)"
             # Check if already in state - use state list which is more reliable
             if terraform state list | grep -q "google_iam_workload_identity_pool.github_actions_pool"; then
               echo "ℹ️  Pool already in Terraform state"
             else
               echo "📥 Importing pool into Terraform state..."
-              terraform import google_iam_workload_identity_pool.github_actions_pool "$POOL_NAME" 2>&1
-              if [ $? -eq 0 ]; then
+              IMPORT_OUTPUT=$(terraform import google_iam_workload_identity_pool.github_actions_pool "$POOL_NAME" 2>&1)
+              IMPORT_EXIT=$?
+              echo "$IMPORT_OUTPUT"
+              if [ $IMPORT_EXIT -eq 0 ]; then
                 echo "✅ Pool imported successfully"
+                # Verify it's in state
+                if terraform state list | grep -q "google_iam_workload_identity_pool.github_actions_pool"; then
+                  echo "✅ Verified: Pool is now in Terraform state"
+                else
+                  echo "❌ WARNING: Import reported success but pool not found in state!"
+                fi
               else
-                echo "⚠️  Pool import failed, but continuing..."
+                echo "❌ Pool import failed with exit code $IMPORT_EXIT"
+                echo "Error: $IMPORT_OUTPUT"
               fi
             fi
           else
-            echo "ℹ️  Pool does not exist in GCP, will be created by Terraform"
+            echo "ℹ️  Pool does not exist in GCP (state: $POOL_STATE), will be created by Terraform"
           fi
           
           # Check if provider exists in GCP

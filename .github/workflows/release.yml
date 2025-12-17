@@ -132,3 +132,4 @@ jobs:
           git tag -a "v${{ steps.release.outputs.version }}" -m "chore(release): ${{ steps.release.outputs.version }}"
           git push https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git "v${{ steps.release.outputs.version }}"
           echo "✅ Tag v${{ steps.release.outputs.version }} created and pushed"
+
