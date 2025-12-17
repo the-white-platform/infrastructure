@@ -123,6 +123,13 @@ resource "google_project_iam_member" "github_actions_workload_identity_pool_admi
   member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
 }
 
+# Allow managing service account IAM policies (needed for WIF bindings)
+resource "google_project_iam_member" "github_actions_service_account_admin" {
+  project = var.project_id
+  role    = "roles/iam.serviceAccountAdmin"
+  member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
+}
+
 # Allow GitHub Actions (via WIF) to impersonate this service account
 # This binds the WIF principal to the service account
 resource "google_service_account_iam_member" "github_actions_wif_binding" {
