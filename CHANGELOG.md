@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### [0.2.3](https://github.com/the-white-platform/infrastructure/compare/v0.2.2...v0.2.3) (2025-12-17)
+
+
+### Bug Fixes
+
+* use roles/iam.admin instead of workloadIdentityPoolAdmin ([200e17e](https://github.com/the-white-platform/infrastructure/commit/200e17e0ae770ad8d507843b1de3ee5ceb250f75))
+
 ### [0.2.2](https://github.com/the-white-platform/infrastructure/compare/v0.2.1...v0.2.2) (2025-12-17)
 
 
