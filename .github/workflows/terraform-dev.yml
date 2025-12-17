@@ -123,8 +123,13 @@ jobs:
               echo "ℹ️  Provider already in Terraform state"
             else
               echo "📥 Importing provider into Terraform state..."
-              terraform import google_iam_workload_identity_pool_provider.github_actions_provider "$PROVIDER_NAME" || \
-                echo "⚠️  Provider import failed (may already be in state)"
+              if terraform import google_iam_workload_identity_pool_provider.github_actions_provider "$PROVIDER_NAME" 2>&1; then
+                echo "✅ Provider imported successfully"
+              else
+                echo "⚠️  Provider import failed, checking if it's already in state..."
+                # Try to refresh state to see if it's there
+                terraform refresh -target=google_iam_workload_identity_pool_provider.github_actions_provider 2>&1 || true
+              fi
             fi
           else
             echo "ℹ️  Provider does not exist in GCP, will be created by Terraform"
@@ -237,8 +242,13 @@ jobs:
               echo "ℹ️  Provider already in Terraform state"
             else
               echo "📥 Importing provider into Terraform state..."
-              terraform import google_iam_workload_identity_pool_provider.github_actions_provider "$PROVIDER_NAME" || \
-                echo "⚠️  Provider import failed (may already be in state)"
+              if terraform import google_iam_workload_identity_pool_provider.github_actions_provider "$PROVIDER_NAME" 2>&1; then
+                echo "✅ Provider imported successfully"
+              else
+                echo "⚠️  Provider import failed, checking if it's already in state..."
+                # Try to refresh state to see if it's there
+                terraform refresh -target=google_iam_workload_identity_pool_provider.github_actions_provider 2>&1 || true
+              fi
             fi
           else
             echo "ℹ️  Provider does not exist in GCP, will be created by Terraform"
