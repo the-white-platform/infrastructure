@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### [0.2.14](https://github.com/the-white-platform/infrastructure/compare/v0.2.13...v0.2.14) (2026-02-08)
+
+
+### CI/CD
+
+* remove WIF import and stale lock workarounds from prod workflow ([017973c](https://github.com/the-white-platform/infrastructure/commit/017973ccf6a05ae35eb5a4de7eb81cbbcb12b280))
+* replace hardcoded values with GitHub org variables ([ada9cb5](https://github.com/the-white-platform/infrastructure/commit/ada9cb520b2c83cbb4b96cd28a216704aa179a84))
+
 ### [0.2.13](https://github.com/the-white-platform/infrastructure/compare/v0.2.12...v0.2.13) (2026-02-08)
 
 
