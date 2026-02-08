@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+### [0.2.13](https://github.com/the-white-platform/infrastructure/compare/v0.2.12...v0.2.13) (2026-02-08)
+
+
+### CI/CD
+
+* remove dev environment and Cloud Build infrastructure ([1180adc](https://github.com/the-white-platform/infrastructure/commit/1180adc493e3acfcf0c4df628965b338caa4f16b))
+
 ### [0.2.12](https://github.com/the-white-platform/infrastructure/compare/v0.2.11...v0.2.12) (2025-12-17)
 
 
