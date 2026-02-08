@@ -77,7 +77,7 @@ jobs:
         working-directory: terraform/environments/prod
         continue-on-error: true
         run: |
-          LOCK_FILE="gs://the-white-prod-terraform-state-481217/terraform/state/prod/default.tflock"
+          LOCK_FILE="gs://${{ vars.TERRAFORM_STATE_BUCKET }}/${{ vars.TERRAFORM_STATE_PREFIX }}/default.tflock"
           if gsutil stat "$LOCK_FILE" &>/dev/null; then
             gsutil rm "$LOCK_FILE" 2>/dev/null && echo "✅ Stale lock removed" || echo "ℹ️  Lock in use"
           fi
@@ -86,9 +86,9 @@ jobs:
         working-directory: terraform/environments/prod
         continue-on-error: true
         run: |
-          PROJECT_ID="the-white-prod-481217"
-          POOL_ID="github-pool"
-          PROVIDER_ID="github-provider"
+          PROJECT_ID="${{ vars.GCP_PROJECT_PROD }}"
+          POOL_ID="${{ vars.WIF_POOL_ID }}"
+          PROVIDER_ID="${{ vars.WIF_PROVIDER_ID }}"
           
           # Get project number
           PROJECT_NUMBER=$(gcloud projects describe "$PROJECT_ID" --format="value(projectNumber)")
