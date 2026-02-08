@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Destroy script for The White Platform infrastructure
-# Usage: ./destroy.sh [environment]
+# Usage: ./destroy.sh prod
 
 set -e
 
@@ -15,15 +15,9 @@ NC='\033[0m' # No Color
 ENVIRONMENT="$1"
 
 # Validate environment
-if [ -z "$ENVIRONMENT" ]; then
-    echo -e "${RED}❌ Environment is required${NC}"
-    echo "Usage: ./destroy.sh [dev|staging|prod]"
-    exit 1
-fi
-
-if [ "$ENVIRONMENT" != "dev" ] && [ "$ENVIRONMENT" != "staging" ] && [ "$ENVIRONMENT" != "prod" ]; then
-    echo -e "${RED}❌ Invalid environment: ${ENVIRONMENT}${NC}"
-    echo "Valid environments: dev, staging, prod"
+if [ "$ENVIRONMENT" != "prod" ]; then
+    echo -e "${RED}❌ Only prod environment exists${NC}"
+    echo "Usage: ./destroy.sh prod"
     exit 1
 fi
 
@@ -31,24 +25,14 @@ echo -e "${RED}⚠️  WARNING: You are about to DESTROY the ${ENVIRONMENT} envi
 echo -e "${RED}This action cannot be undone!${NC}"
 echo ""
 
-# Extra confirmation for production
-if [ "$ENVIRONMENT" = "prod" ]; then
-    echo -e "${RED}🚨 PRODUCTION ENVIRONMENT DETECTED 🚨${NC}"
-    echo -e "${RED}This will destroy ALL production resources!${NC}"
-    echo ""
-    read -p "Type 'destroy-production' to confirm: " CONFIRM
-    
-    if [ "$CONFIRM" != "destroy-production" ]; then
-        echo -e "${GREEN}✅ Destruction cancelled${NC}"
-        exit 0
-    fi
-else
-    read -p "Type 'destroy' to confirm: " CONFIRM
-    
-    if [ "$CONFIRM" != "destroy" ]; then
-        echo -e "${GREEN}✅ Destruction cancelled${NC}"
-        exit 0
-    fi
+echo -e "${RED}🚨 PRODUCTION ENVIRONMENT DETECTED 🚨${NC}"
+echo -e "${RED}This will destroy ALL production resources!${NC}"
+echo ""
+read -p "Type 'destroy-production' to confirm: " CONFIRM
+
+if [ "$CONFIRM" != "destroy-production" ]; then
+    echo -e "${GREEN}✅ Destruction cancelled${NC}"
+    exit 0
 fi
 
 # Navigate to environment directory
@@ -89,5 +73,4 @@ echo ""
 echo -e "${YELLOW}Note: The following resources may need manual cleanup:${NC}"
 echo "- GCS buckets (if not empty)"
 echo "- Secret Manager secrets"
-echo "- Container images in GCR"
-echo "- Cloud Build history"
+echo "- Container images in Artifact Registry"

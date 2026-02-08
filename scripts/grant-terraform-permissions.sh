@@ -2,32 +2,12 @@
 
 # Grant Terraform permissions to GitHub Actions service accounts
 # This must be run manually before Terraform can apply the IAM changes
-# Usage: ./grant-terraform-permissions.sh [dev|prod]
+# Usage: ./grant-terraform-permissions.sh
 
 set -e
 
-ENVIRONMENT="$1"
-
-if [ -z "$ENVIRONMENT" ]; then
-    echo "❌ Environment is required"
-    echo "Usage: ./grant-terraform-permissions.sh [dev|prod]"
-    exit 1
-fi
-
-if [ "$ENVIRONMENT" != "dev" ] && [ "$ENVIRONMENT" != "prod" ]; then
-    echo "❌ Invalid environment: $ENVIRONMENT"
-    echo "Valid environments: dev, prod"
-    exit 1
-fi
-
-# Set project and service account based on environment
-if [ "$ENVIRONMENT" = "dev" ]; then
-    PROJECT_ID="the-white-dev-481217"
-    SA_EMAIL="github-actions-deployer@${PROJECT_ID}.iam.gserviceaccount.com"
-else
-    PROJECT_ID="the-white-prod-481217"
-    SA_EMAIL="github-actions-deployer@${PROJECT_ID}.iam.gserviceaccount.com"
-fi
+PROJECT_ID="the-white-prod-481217"
+SA_EMAIL="github-actions-deployer@${PROJECT_ID}.iam.gserviceaccount.com"
 
 echo "🔐 Granting Terraform permissions to ${SA_EMAIL} in ${PROJECT_ID}..."
 

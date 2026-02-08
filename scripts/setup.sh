@@ -62,22 +62,20 @@ echo -e "${GREEN}📦 Creating GCS buckets for Terraform state...${NC}"
 
 REGION="europe-north1"
 
-# Create buckets for each environment
-for ENV in dev staging prod; do
-    BUCKET_NAME="the-white-platform-terraform-state-${ENV}"
-    
-    if gsutil ls -b "gs://${BUCKET_NAME}" &> /dev/null; then
-        echo -e "${YELLOW}⚠️  Bucket ${BUCKET_NAME} already exists, skipping...${NC}"
-    else
-        echo -e "${GREEN}Creating bucket: ${BUCKET_NAME}${NC}"
-        gsutil mb -p "$PROJECT_ID" -c STANDARD -l "$REGION" "gs://${BUCKET_NAME}"
-        
-        # Enable versioning
-        gsutil versioning set on "gs://${BUCKET_NAME}"
-        
-        echo -e "${GREEN}✅ Bucket ${BUCKET_NAME} created${NC}"
-    fi
-done
+# Create bucket for prod
+BUCKET_NAME="the-white-platform-terraform-state-prod"
+
+if gsutil ls -b "gs://${BUCKET_NAME}" &> /dev/null; then
+    echo -e "${YELLOW}⚠️  Bucket ${BUCKET_NAME} already exists, skipping...${NC}"
+else
+    echo -e "${GREEN}Creating bucket: ${BUCKET_NAME}${NC}"
+    gsutil mb -p "$PROJECT_ID" -c STANDARD -l "$REGION" "gs://${BUCKET_NAME}"
+
+    # Enable versioning
+    gsutil versioning set on "gs://${BUCKET_NAME}"
+
+    echo -e "${GREEN}✅ Bucket ${BUCKET_NAME} created${NC}"
+fi
 
 # Create service account for Terraform
 echo -e "${GREEN}👤 Creating Terraform service account...${NC}"
@@ -122,71 +120,60 @@ echo -e "${YELLOW}Would you like to create secrets now? (y/n)${NC}"
 read -p "Create secrets: " CREATE_SECRETS
 
 if [ "$CREATE_SECRETS" = "y" ] || [ "$CREATE_SECRETS" = "Y" ]; then
-    for ENV in dev staging prod; do
-        echo -e "${GREEN}Creating secrets for ${ENV} environment...${NC}"
-        
-        # DATABASE_URI
-        SECRET_NAME="DATABASE_URI"
-        if [ "$ENV" != "prod" ]; then
-            SECRET_NAME="${SECRET_NAME}_${ENV^^}"
+    echo -e "${GREEN}Creating secrets for prod environment...${NC}"
+
+    # DATABASE_URI
+    SECRET_NAME="DATABASE_URI"
+
+    if gcloud secrets describe "$SECRET_NAME" &> /dev/null; then
+        echo -e "${YELLOW}⚠️  Secret ${SECRET_NAME} already exists, skipping...${NC}"
+    else
+        echo -e "${YELLOW}Enter ${SECRET_NAME} (PostgreSQL connection string):${NC}"
+        read -s DB_URI
+        echo -n "$DB_URI" | gcloud secrets create "$SECRET_NAME" \
+            --data-file=- \
+            --replication-policy="automatic"
+        echo -e "${GREEN}✅ Secret ${SECRET_NAME} created${NC}"
+    fi
+
+    # PAYLOAD_SECRET
+    SECRET_NAME="PAYLOAD_SECRET"
+
+    if gcloud secrets describe "$SECRET_NAME" &> /dev/null; then
+        echo -e "${YELLOW}⚠️  Secret ${SECRET_NAME} already exists, skipping...${NC}"
+    else
+        echo -e "${YELLOW}Enter ${SECRET_NAME} (or press enter to generate):${NC}"
+        read -s PAYLOAD_SECRET
+        if [ -z "$PAYLOAD_SECRET" ]; then
+            PAYLOAD_SECRET=$(openssl rand -hex 32)
+            echo -e "${GREEN}Generated: ${PAYLOAD_SECRET}${NC}"
         fi
-        
-        if gcloud secrets describe "$SECRET_NAME" &> /dev/null; then
-            echo -e "${YELLOW}⚠️  Secret ${SECRET_NAME} already exists, skipping...${NC}"
-        else
-            echo -e "${YELLOW}Enter ${SECRET_NAME} (PostgreSQL connection string):${NC}"
-            read -s DB_URI
-            echo -n "$DB_URI" | gcloud secrets create "$SECRET_NAME" \
-                --data-file=- \
-                --replication-policy="automatic"
-            echo -e "${GREEN}✅ Secret ${SECRET_NAME} created${NC}"
-        fi
-        
-        # PAYLOAD_SECRET
-        SECRET_NAME="PAYLOAD_SECRET"
-        if [ "$ENV" != "prod" ]; then
-            SECRET_NAME="${SECRET_NAME}_${ENV^^}"
-        fi
-        
-        if gcloud secrets describe "$SECRET_NAME" &> /dev/null; then
-            echo -e "${YELLOW}⚠️  Secret ${SECRET_NAME} already exists, skipping...${NC}"
-        else
-            echo -e "${YELLOW}Enter ${SECRET_NAME} (or press enter to generate):${NC}"
-            read -s PAYLOAD_SECRET
-            if [ -z "$PAYLOAD_SECRET" ]; then
-                PAYLOAD_SECRET=$(openssl rand -hex 32)
-                echo -e "${GREEN}Generated: ${PAYLOAD_SECRET}${NC}"
-            fi
-            echo -n "$PAYLOAD_SECRET" | gcloud secrets create "$SECRET_NAME" \
-                --data-file=- \
-                --replication-policy="automatic"
-            echo -e "${GREEN}✅ Secret ${SECRET_NAME} created${NC}"
-        fi
-        
-        # NEXT_PUBLIC_SERVER_URL
-        SECRET_NAME="NEXT_PUBLIC_SERVER_URL"
-        if [ "$ENV" != "prod" ]; then
-            SECRET_NAME="${SECRET_NAME}_${ENV^^}"
-        fi
-        
-        if gcloud secrets describe "$SECRET_NAME" &> /dev/null; then
-            echo -e "${YELLOW}⚠️  Secret ${SECRET_NAME} already exists, skipping...${NC}"
-        else
-            echo -e "${YELLOW}Enter ${SECRET_NAME} (e.g., https://thewhite.cool):${NC}"
-            read SERVER_URL
-            echo -n "$SERVER_URL" | gcloud secrets create "$SECRET_NAME" \
-                --data-file=- \
-                --replication-policy="automatic"
-            echo -e "${GREEN}✅ Secret ${SECRET_NAME} created${NC}"
-        fi
-    done
+        echo -n "$PAYLOAD_SECRET" | gcloud secrets create "$SECRET_NAME" \
+            --data-file=- \
+            --replication-policy="automatic"
+        echo -e "${GREEN}✅ Secret ${SECRET_NAME} created${NC}"
+    fi
+
+    # NEXT_PUBLIC_SERVER_URL
+    SECRET_NAME="NEXT_PUBLIC_SERVER_URL"
+
+    if gcloud secrets describe "$SECRET_NAME" &> /dev/null; then
+        echo -e "${YELLOW}⚠️  Secret ${SECRET_NAME} already exists, skipping...${NC}"
+    else
+        echo -e "${YELLOW}Enter ${SECRET_NAME} (e.g., https://thewhite.cool):${NC}"
+        read SERVER_URL
+        echo -n "$SERVER_URL" | gcloud secrets create "$SECRET_NAME" \
+            --data-file=- \
+            --replication-policy="automatic"
+        echo -e "${GREEN}✅ Secret ${SECRET_NAME} created${NC}"
+    fi
 fi
 
 echo ""
 echo -e "${GREEN}✅ Setup complete!${NC}"
 echo ""
 echo -e "${YELLOW}Next steps:${NC}"
-echo "1. Navigate to an environment directory (e.g., cd terraform/environments/dev)"
+echo "1. Navigate to the prod environment directory: cd terraform/environments/prod"
 echo "2. Run the setup script: bash setup-env.sh"
 echo "3. Edit terraform.tfvars with your project ID and configuration"
 echo "4. Initialize Terraform: terraform init"

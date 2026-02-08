@@ -6,9 +6,7 @@ terraform {
     # bucket  = "the-white-platform-terraform-state"
     # prefix  = "terraform/state"
     
-    # Uncomment and configure these in each environment:
-    # - environments/dev/backend.tf
-    # - environments/staging/backend.tf
+    # Uncomment and configure in:
     # - environments/prod/backend.tf
   }
 }

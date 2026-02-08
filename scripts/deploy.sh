@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Deployment script for The White Platform
-# Usage: ./deploy.sh [environment] [options]
+# Usage: ./deploy.sh prod [options]
 
 set -e
 
@@ -20,7 +20,7 @@ PLAN_ONLY=false
 # Parse arguments
 while [[ $# -gt 0 ]]; do
     case $1 in
-        dev|staging|prod)
+        prod)
             ENVIRONMENT="$1"
             shift
             ;;
@@ -33,12 +33,7 @@ while [[ $# -gt 0 ]]; do
             shift
             ;;
         -h|--help)
-            echo "Usage: ./deploy.sh [environment] [options]"
-            echo ""
-            echo "Environments:"
-            echo "  dev       Deploy to development"
-            echo "  staging   Deploy to staging"
-            echo "  prod      Deploy to production"
+            echo "Usage: ./deploy.sh prod [options]"
             echo ""
             echo "Options:"
             echo "  --auto-approve  Skip interactive approval"
@@ -54,9 +49,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Validate environment
-if [ -z "$ENVIRONMENT" ]; then
-    echo -e "${RED}❌ Environment is required${NC}"
-    echo "Usage: ./deploy.sh [dev|staging|prod]"
+if [ "$ENVIRONMENT" != "prod" ]; then
+    echo -e "${RED}❌ Only prod environment exists${NC}"
+    echo "Usage: ./deploy.sh prod"
     exit 1
 fi
 
@@ -122,7 +117,7 @@ if [ "$AUTO_APPROVE" = false ]; then
     echo ""
     echo -e "${YELLOW}⚠️  You are about to deploy to ${ENVIRONMENT}${NC}"
     read -p "Continue? (yes/no): " CONFIRM
-    
+
     if [ "$CONFIRM" != "yes" ]; then
         echo -e "${RED}❌ Deployment cancelled${NC}"
         rm -f tfplan
@@ -152,8 +147,3 @@ terraform output
 SERVICE_URL=$(terraform output -raw service_url 2>/dev/null || echo "N/A")
 echo ""
 echo -e "${GREEN}🌐 Service URL: ${SERVICE_URL}${NC}"
-echo ""
-echo -e "${YELLOW}Next steps:${NC}"
-echo "1. Verify the deployment: curl ${SERVICE_URL}"
-echo "2. Check logs: gcloud run services logs read fashion-web-${ENVIRONMENT}"
-echo "3. Monitor metrics in GCP Console"
