@@ -37,12 +37,9 @@ env_vars = {
   NEXT_TELEMETRY_DISABLED = "1"
 }
 
-# Secrets from Secret Manager (will need to migrate these)
+# Secrets from Secret Manager
+# Note: DATABASE_URI is auto-injected by Cloud SQL when enable_cloud_sql = true
 secrets = {
-  DATABASE_URI = {
-    secret_name = "DATABASE_URI"
-    version     = "latest"
-  }
   PAYLOAD_SECRET = {
     secret_name = "PAYLOAD_SECRET"
     version     = "latest"
@@ -66,6 +63,6 @@ ingress = "all"
 # Execution environment
 execution_environment = "gen2"
 
-# Cloud SQL (disabled - using external Neon database)
-enable_cloud_sql = false
+# Cloud SQL
+enable_cloud_sql = true
 

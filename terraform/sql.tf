@@ -102,3 +102,12 @@ resource "google_secret_manager_secret_iam_member" "generated_db_access" {
   role      = "roles/secretmanager.secretAccessor"
   member    = "serviceAccount:${google_service_account.cloud_run.email}"
 }
+
+# Grant Cloud SQL Client role so Cloud Run can connect via Auth Proxy
+resource "google_project_iam_member" "cloud_run_cloudsql_client" {
+  count = var.enable_cloud_sql ? 1 : 0
+
+  project = var.project_id
+  role    = "roles/cloudsql.client"
+  member  = "serviceAccount:${google_service_account.cloud_run.email}"
+}
