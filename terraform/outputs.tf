@@ -59,7 +59,26 @@ output "domain_mapping_status" {
   } : null
 }
 
+output "load_balancer_ip" {
+  description = "Global static IP address of the HTTPS Load Balancer (when Cloud Armor is enabled)"
+  value       = var.enable_cloud_armor ? google_compute_global_address.main[0].address : null
+}
+
 output "next_steps" {
   description = "Next steps after deployment"
   value       = var.domain_name != "" ? "Domain configured: https://${var.domain_name} - Add CNAME record pointing to ghs.googlehosted.com" : "Service deployed at: ${google_cloud_run_service.main.status[0].url}"
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# VERTEX AI VIRTUAL TRY-ON (VTO) OUTPUTS
+# ---------------------------------------------------------------------------------------------------------------------
+
+output "vto_bucket_name" {
+  description = "Name of the GCS bucket for VTO images"
+  value       = var.enable_vertex_vto ? google_storage_bucket.vto_images[0].name : null
+}
+
+output "vto_vertex_endpoint" {
+  description = "Vertex AI API endpoint for the configured region"
+  value       = var.enable_vertex_vto ? "https://${var.region}-aiplatform.googleapis.com" : null
 }
