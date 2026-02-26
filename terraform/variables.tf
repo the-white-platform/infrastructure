@@ -132,6 +132,22 @@ variable "execution_environment" {
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
+# CLOUD ARMOR / LOAD BALANCER CONFIGURATION
+# ---------------------------------------------------------------------------------------------------------------------
+
+variable "enable_cloud_armor" {
+  description = "Enable Cloud Armor security policy and Global HTTPS Load Balancer"
+  type        = bool
+  default     = false
+}
+
+variable "cloud_armor_rate_limit_threshold" {
+  description = "Maximum requests per minute per IP before rate limiting (Cloud Armor)"
+  type        = number
+  default     = 100
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
 # CLOUD SQL CONFIGURATION
 # ---------------------------------------------------------------------------------------------------------------------
 
@@ -170,4 +186,26 @@ variable "db_password" {
   type        = string
   sensitive   = true
   default     = "" # If empty, a random one will be generated
+}
+
+# ---------------------------------------------------------------------------------------------------------------------
+# VERTEX AI VIRTUAL TRY-ON (VTO) CONFIGURATION
+# ---------------------------------------------------------------------------------------------------------------------
+
+variable "enable_vertex_vto" {
+  description = "Enable Vertex AI Virtual Try-On resources"
+  type        = bool
+  default     = false
+}
+
+variable "vto_bucket_name" {
+  description = "Name of the GCS bucket for VTO images"
+  type        = string
+  default     = ""
+}
+
+variable "vto_bucket_location" {
+  description = "Location for the VTO GCS bucket"
+  type        = string
+  default     = "asia-southeast1"
 }

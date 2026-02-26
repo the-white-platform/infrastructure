@@ -13,6 +13,7 @@ resource "google_project_service" "required_apis" {
     "sqladmin.googleapis.com",
     "certificatemanager.googleapis.com", # For SSL certificates
     "iam.googleapis.com",                # For Workload Identity Federation
+    "aiplatform.googleapis.com",         # For Vertex AI Virtual Try-On
   ])
 
   service            = each.value
@@ -28,7 +29,7 @@ resource "google_cloud_run_service" "main" {
     spec {
       containers {
         image = var.container_image
-        
+
         ports {
           container_port = var.container_port
         }
@@ -94,11 +95,11 @@ resource "google_cloud_run_service" "main" {
         "autoscaling.knative.dev/minScale"      = tostring(var.min_instances)
         "autoscaling.knative.dev/maxScale"      = tostring(var.max_instances)
         "run.googleapis.com/execution-environment" = var.execution_environment
-        
+
         # VPC connector if specified
         "run.googleapis.com/vpc-access-connector" = var.vpc_connector_name != "" ? var.vpc_connector_name : null
         "run.googleapis.com/vpc-access-egress"    = var.vpc_connector_name != "" ? "private-ranges-only" : null
-        
+
         # Cloud SQL connections
         "run.googleapis.com/cloudsql-instances" = var.enable_cloud_sql ? google_sql_database_instance.main[0].connection_name : (length(var.cloudsql_instances) > 0 ? join(",", var.cloudsql_instances) : null)
       }
@@ -115,9 +116,9 @@ resource "google_cloud_run_service" "main" {
 
   metadata {
     annotations = {
-      "run.googleapis.com/ingress" = var.ingress
+      "run.googleapis.com/ingress" = var.enable_cloud_armor ? "internal-and-cloud-load-balancing" : var.ingress
     }
-    
+
     labels = merge(
       var.labels,
       {
@@ -280,4 +281,51 @@ resource "google_monitoring_alert_policy" "high_latency" {
   alert_strategy {
     auto_close = "1800s"
   }
+}
+
+
+# ---------------------------------------------------------------------------------------------------------------------
+# VERTEX AI VIRTUAL TRY-ON (VTO) RESOURCES
+# ---------------------------------------------------------------------------------------------------------------------
+
+# GCS bucket for VTO images
+resource "google_storage_bucket" "vto_images" {
+  count = var.enable_vertex_vto ? 1 : 0
+
+  name     = var.vto_bucket_name != "" ? var.vto_bucket_name : "${var.project_id}-vto-images"
+  location = var.vto_bucket_location
+  project  = var.project_id
+
+  uniform_bucket_level_access = true
+  public_access_prevention    = "enforced"
+  force_destroy               = false
+
+  labels = merge(
+    var.labels,
+    {
+      environment = var.environment
+      managed-by  = "terraform"
+      purpose     = "vto-images"
+    }
+  )
+
+  depends_on = [google_project_service.required_apis]
+}
+
+# Grant Vertex AI user role to Cloud Run service account
+resource "google_project_iam_member" "cloud_run_vertex_ai_user" {
+  count = var.enable_vertex_vto ? 1 : 0
+
+  project = var.project_id
+  role    = "roles/aiplatform.user"
+  member  = "serviceAccount:${google_service_account.cloud_run.email}"
+}
+
+# Grant Storage Object Admin on VTO bucket to Cloud Run service account
+resource "google_storage_bucket_iam_member" "cloud_run_vto_bucket_admin" {
+  count = var.enable_vertex_vto ? 1 : 0
+
+  bucket = google_storage_bucket.vto_images[0].name
+  role   = "roles/storage.objectAdmin"
+  member = "serviceAccount:${google_service_account.cloud_run.email}"
 }
