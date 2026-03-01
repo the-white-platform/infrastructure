@@ -103,6 +103,13 @@ resource "google_compute_managed_ssl_certificate" "main" {
   managed {
     domains = [var.domain_name]
   }
+
+  lifecycle {
+    precondition {
+      condition     = var.domain_name != ""
+      error_message = "domain_name must be set when enable_cloud_armor is true (an SSL certificate requires a domain)."
+    }
+  }
 }
 
 # HTTPS proxy
