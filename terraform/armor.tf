@@ -73,7 +73,6 @@ resource "google_compute_backend_service" "main" {
   name        = "${var.service_name}-backend"
   protocol    = "HTTP"
   port_name   = "http"
-  timeout_sec = var.timeout_seconds
 
   backend {
     group = google_compute_region_network_endpoint_group.main[0].id
