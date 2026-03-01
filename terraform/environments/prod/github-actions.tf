@@ -156,6 +156,20 @@ resource "google_project_iam_member" "github_actions_cloudsql_admin" {
   member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
 }
 
+# Allow managing Cloud Armor security policies
+resource "google_project_iam_member" "github_actions_compute_security_admin" {
+  project = var.project_id
+  role    = "roles/compute.securityAdmin"
+  member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
+}
+
+# Allow managing global compute resources (NEGs, SSL certs, global addresses)
+resource "google_project_iam_member" "github_actions_compute_network_admin" {
+  project = var.project_id
+  role    = "roles/compute.networkAdmin"
+  member  = "serviceAccount:${google_service_account.github_actions_deployer.email}"
+}
+
 # Grant service account permission to get access tokens for itself
 # This is needed for the service account to access GCS buckets
 resource "google_service_account_iam_member" "github_actions_self_token_creator" {
