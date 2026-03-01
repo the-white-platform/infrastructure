@@ -209,3 +209,26 @@ variable "vto_bucket_location" {
   type        = string
   default     = "asia-southeast1"
 }
+
+variable "vto_image_retention_days" {
+  description = "Days before VTO images are auto-deleted from GCS"
+  type        = number
+  default     = 30
+}
+
+variable "vto_budget_amount" {
+  description = "Monthly budget alert threshold in USD for Vertex AI spend"
+  type        = number
+  default     = 50
+}
+
+variable "billing_account_id" {
+  description = "GCP billing account ID for budget alerts"
+  type        = string
+}
+
+variable "budget_alert_email" {
+  description = "Email address for budget alert notifications (leave empty to disable)"
+  type        = string
+  default     = ""
+}

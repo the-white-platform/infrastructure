@@ -14,6 +14,7 @@ resource "google_project_service" "required_apis" {
     "certificatemanager.googleapis.com", # For SSL certificates
     "iam.googleapis.com",                # For Workload Identity Federation
     "aiplatform.googleapis.com",         # For Vertex AI Virtual Try-On
+    "billingbudgets.googleapis.com",     # For budget alerts
   ])
 
   service            = each.value
@@ -300,6 +301,15 @@ resource "google_storage_bucket" "vto_images" {
   public_access_prevention    = "enforced"
   force_destroy               = false
 
+  lifecycle_rule {
+    condition {
+      age = var.vto_image_retention_days
+    }
+    action {
+      type = "Delete"
+    }
+  }
+
   labels = merge(
     var.labels,
     {
@@ -328,4 +338,12 @@ resource "google_storage_bucket_iam_member" "cloud_run_vto_bucket_admin" {
   bucket = google_storage_bucket.vto_images[0].name
   role   = "roles/storage.objectAdmin"
   member = "serviceAccount:${google_service_account.cloud_run.email}"
+}
+
+# Grant Token Creator role to Cloud Run SA on itself (needed for V4 signed URLs)
+resource "google_service_account_iam_member" "cloud_run_token_creator" {
+  count              = var.enable_vertex_vto ? 1 : 0
+  service_account_id = google_service_account.cloud_run.name
+  role               = "roles/iam.serviceAccountTokenCreator"
+  member             = "serviceAccount:${google_service_account.cloud_run.email}"
 }

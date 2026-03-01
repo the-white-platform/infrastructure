@@ -35,6 +35,9 @@ enable_monitoring = true
 env_vars = {
   NODE_ENV                 = "production"
   NEXT_TELEMETRY_DISABLED = "1"
+  GCP_PROJECT_ID           = "the-white-prod-481217"
+  GCP_REGION               = "asia-southeast1"
+  VTO_BUCKET_NAME          = "the-white-prod-481217-vto-images"
 }
 
 # Secrets from Secret Manager
@@ -66,3 +69,14 @@ execution_environment = "gen2"
 # Cloud SQL
 enable_cloud_sql = true
 
+# Vertex AI Virtual Try-On
+enable_vertex_vto              = true
+vto_bucket_name                = ""
+vto_bucket_location            = "asia-southeast1"
+
+# Cloud Armor + Load Balancer
+enable_cloud_armor               = true
+cloud_armor_rate_limit_threshold = 100
+
+# Billing
+billing_account_id = "015F7D-99EE6C-0A30FB"
