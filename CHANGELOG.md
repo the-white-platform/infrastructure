@@ -4,6 +4,23 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [0.5.0](https://github.com/the-white-platform/infrastructure/compare/v0.4.0...v0.5.0) (2026-03-01)
+
+
+### Features
+
+* add GCP configuration variables to production environment ([8149a5f](https://github.com/the-white-platform/infrastructure/commit/8149a5fdb7092a4ed8acb94b22a6b0fc5b212d9d))
+* add Vertex AI budget alerts with configurable thresholds ([f20c6e1](https://github.com/the-white-platform/infrastructure/commit/f20c6e1bc4edd4dd980dc54ac4d645873434f2a0))
+* **armor:** add precondition validation for domain_name in SSL certific ([4aa4d03](https://github.com/the-white-platform/infrastructure/commit/4aa4d0370e1bc90e0a20b5c3f370b379cb8b5737))
+* **budget:** make billing account ID configurable and add email notific ([f2ce856](https://github.com/the-white-platform/infrastructure/commit/f2ce856252ea6d94f6a2178547fae04eb5389fe2))
+* enable Vertex AI VTO and Cloud Armor in production environment ([a27d1eb](https://github.com/the-white-platform/infrastructure/commit/a27d1ebe1b198b64d88204bbd006f1bdf414b85d))
+* merge vertex-ai-virtual-try-on-iac into main ([b159859](https://github.com/the-white-platform/infrastructure/commit/b1598590616158402e845f6bacb65e92b3c117da))
+
+
+### Bug Fixes
+
+* **armor:** remove timeout_sec configuration from backend service ([acf3870](https://github.com/the-white-platform/infrastructure/commit/acf38701016466d288683b5b7215102a73d6d1d1))
+
 ## [0.4.0](https://github.com/the-white-platform/infrastructure/compare/v0.3.1...v0.4.0) (2026-02-26)
 
 
