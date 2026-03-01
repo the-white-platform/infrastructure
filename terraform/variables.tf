@@ -222,6 +222,11 @@ variable "vto_budget_amount" {
   default     = 50
 }
 
+variable "billing_account_id" {
+  description = "GCP billing account ID for budget alerts"
+  type        = string
+}
+
 variable "budget_alert_email" {
   description = "Email address for budget alert notifications (leave empty to disable)"
   type        = string

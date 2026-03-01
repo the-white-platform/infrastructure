@@ -86,5 +86,6 @@ execution_environment = "gen2"
 # BUDGET ALERT (set email to enable)
 # ---------------------------------------------------------------------------------------------------------------------
 
+# billing_account_id = "YOUR-BILLING-ACCOUNT-ID"
 # vto_budget_amount  = 50
 # budget_alert_email = "your-email@example.com"

@@ -77,3 +77,6 @@ vto_bucket_location            = "asia-southeast1"
 # Cloud Armor + Load Balancer
 enable_cloud_armor               = true
 cloud_armor_rate_limit_threshold = 100
+
+# Billing
+billing_account_id = "015F7D-99EE6C-0A30FB"

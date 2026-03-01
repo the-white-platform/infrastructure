@@ -1,7 +1,18 @@
 # Budget alert for Vertex AI spend
+resource "google_monitoring_notification_channel" "budget_email" {
+  count        = var.budget_alert_email != "" ? 1 : 0
+  project      = var.project_id
+  display_name = "${var.service_name}-budget-alert-email"
+  type         = "email"
+
+  labels = {
+    email_address = var.budget_alert_email
+  }
+}
+
 resource "google_billing_budget" "vertex_ai" {
   count           = var.budget_alert_email != "" ? 1 : 0
-  billing_account = "015F7D-99EE6C-0A30FB"
+  billing_account = var.billing_account_id
   display_name    = "${var.service_name}-vertex-ai-budget"
 
   budget_filter {
@@ -27,8 +38,10 @@ resource "google_billing_budget" "vertex_ai" {
   }
 
   all_updates_rule {
-    monitoring_notification_channels = []
-    disable_default_iam_recipients   = false
+    monitoring_notification_channels = [
+      google_monitoring_notification_channel.budget_email[0].id
+    ]
+    disable_default_iam_recipients = false
   }
 }
 
