@@ -53,9 +53,9 @@ output "domain_mapping_status" {
   value = var.domain_name != "" ? {
     domain              = var.domain_name
     cloud_run_url       = google_cloud_run_service.main.status[0].url
-    dns_records         = google_cloud_run_domain_mapping.main[0].status[0].resource_records
-    verification_status = "Check Cloud Run console for domain verification status"
-    instructions        = "Add the DNS records shown in dns_records to your DNS provider (Porkbun)"
+    dns_records         = !var.enable_cloud_armor ? google_cloud_run_domain_mapping.main[0].status[0].resource_records : []
+    verification_status = var.enable_cloud_armor ? "Domain routed via Global HTTPS Load Balancer" : "Check Cloud Run console for domain verification status"
+    instructions        = var.enable_cloud_armor ? "Add A record pointing to Load Balancer IP" : "Add the DNS records shown in dns_records to your DNS provider"
   } : null
 }
 
@@ -66,7 +66,7 @@ output "load_balancer_ip" {
 
 output "next_steps" {
   description = "Next steps after deployment"
-  value       = var.domain_name != "" ? "Domain configured: https://${var.domain_name} - Add CNAME record pointing to ghs.googlehosted.com" : "Service deployed at: ${google_cloud_run_service.main.status[0].url}"
+  value       = var.domain_name != "" ? (var.enable_cloud_armor ? "Domain configured: https://${var.domain_name} - Ensure A record points to LB IP: ${google_compute_global_address.main[0].address}" : "Domain configured: https://${var.domain_name} - Add CNAME record pointing to ghs.googlehosted.com") : "Service deployed at: ${google_cloud_run_service.main.status[0].url}"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------

@@ -179,7 +179,7 @@ resource "google_secret_manager_secret_iam_member" "cloud_run_secret_access" {
 
 # Custom domain mapping (if domain is specified)
 resource "google_cloud_run_domain_mapping" "main" {
-  count = var.domain_name != "" ? 1 : 0
+  count = var.domain_name != "" && !var.enable_cloud_armor ? 1 : 0
 
   location = var.region
   name     = var.domain_name
