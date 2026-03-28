@@ -11,13 +11,13 @@ service_name = "fashion-web"
 container_image = "us-docker.pkg.dev/cloudrun/container/hello"
 container_port  = 3000
 
-# Resource allocation
-memory = "2Gi"
-cpu    = "2"
+# Resource allocation (downsized — 1 vCPU is enough for small store)
+memory = "1Gi"
+cpu    = "1"
 
-# Scaling configuration
-min_instances = 1
-max_instances = 10
+# Scaling configuration (min=0 saves ~500K VND/month — cold start is ~2-3s)
+min_instances = 0
+max_instances = 5
 
 # Timeout
 timeout_seconds = 300
@@ -60,7 +60,7 @@ labels = {
   managed-by  = "terraform"
 }
 
-# Ingress settings
+# Ingress settings (direct access — no load balancer)
 ingress = "all"
 
 # Execution environment
@@ -69,13 +69,14 @@ execution_environment = "gen2"
 # Cloud SQL
 enable_cloud_sql = true
 
-# Vertex AI Virtual Try-On
-enable_vertex_vto              = true
+# Vertex AI Virtual Try-On (replaced by Gemini Flash — free tier)
+enable_vertex_vto              = false
 vto_bucket_name                = ""
 vto_bucket_location            = "asia-southeast1"
 
-# Cloud Armor + Load Balancer
-enable_cloud_armor               = true
+# Cloud Armor + Load Balancer (disabled — saves ~330K VND/month)
+# Cloud Run has built-in HTTPS at *.run.app, use custom domain mapping instead
+enable_cloud_armor               = false
 cloud_armor_rate_limit_threshold = 100
 
 # Billing
