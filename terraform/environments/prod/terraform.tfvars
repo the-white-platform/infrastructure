@@ -41,14 +41,22 @@ env_vars = {
 }
 
 # Secrets from Secret Manager
-# Note: DATABASE_URI is auto-injected by Cloud SQL when enable_cloud_sql = true
+# Database is now Neon (free tier) — connection string in Secret Manager
 secrets = {
+  DATABASE_URI = {
+    secret_name = "DATABASE_URI"
+    version     = "latest"
+  }
   PAYLOAD_SECRET = {
     secret_name = "PAYLOAD_SECRET"
     version     = "latest"
   }
   NEXT_PUBLIC_SERVER_URL = {
     secret_name = "NEXT_PUBLIC_SERVER_URL"
+    version     = "latest"
+  }
+  GEMINI_API_KEY = {
+    secret_name = "GEMINI_API_KEY"
     version     = "latest"
   }
 }
@@ -66,8 +74,8 @@ ingress = "all"
 # Execution environment
 execution_environment = "gen2"
 
-# Cloud SQL
-enable_cloud_sql = true
+# Cloud SQL (replaced by Neon free-tier PostgreSQL)
+enable_cloud_sql = false
 
 # Vertex AI Virtual Try-On (replaced by Gemini Flash — free tier)
 enable_vertex_vto              = false
