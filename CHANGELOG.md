@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+## [0.7.0](https://github.com/the-white-platform/infrastructure/compare/v0.6.0...v0.7.0) (2026-04-15)
+
+
+### Features
+
+* wire Cloud Run secrets + GCS media bucket for fashion-web v1 prod ([8faf318](https://github.com/the-white-platform/infrastructure/commit/8faf3187c0a204cae7f726273859d98a588c5718))
+
 ## [0.6.0](https://github.com/the-white-platform/infrastructure/compare/v0.5.4...v0.6.0) (2026-03-29)
 
 
