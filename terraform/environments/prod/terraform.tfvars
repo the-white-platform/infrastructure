@@ -93,8 +93,10 @@ ingress = "all"
 # Execution environment
 execution_environment = "gen2"
 
-# Cloud SQL (replaced by Neon free-tier PostgreSQL)
-enable_cloud_sql = false
+# Cloud SQL — enabled for stable Postgres without the Supabase pooler issues
+# (drizzle prepared-statement bugs, ~30-client cap on session pool). Smallest
+# tier; keep an eye on spend.
+enable_cloud_sql = true
 
 # Vertex AI Virtual Try-On (replaced by Gemini Flash — free tier)
 enable_vertex_vto   = false
