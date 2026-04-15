@@ -26,7 +26,7 @@ timeout_seconds = 300
 allow_unauthenticated = true
 
 # Custom domain
-domain_name = "thewhite.cool"  # Update with your production domain
+domain_name = "thewhite.cool" # Update with your production domain
 
 # Monitoring
 enable_monitoring = true
@@ -37,7 +37,7 @@ env_vars = {
   NEXT_TELEMETRY_DISABLED = "1"
   GCP_PROJECT_ID          = "the-white-prod-481217"
   GCP_REGION              = "asia-southeast1"
-  ADMIN_EMAIL             = "admin@thewhite.vn"
+  ADMIN_EMAIL             = "admin@thewhite.cool"
   PAYLOAD_MEDIA_BUCKET    = "the-white-prod-481217-payload-media" # read by storage-gcs adapter
 }
 
@@ -97,9 +97,9 @@ execution_environment = "gen2"
 enable_cloud_sql = false
 
 # Vertex AI Virtual Try-On (replaced by Gemini Flash — free tier)
-enable_vertex_vto              = false
-vto_bucket_name                = ""
-vto_bucket_location            = "asia-southeast1"
+enable_vertex_vto   = false
+vto_bucket_name     = ""
+vto_bucket_location = "asia-southeast1"
 
 # Cloud Armor + Load Balancer (disabled — saves ~330K VND/month)
 # Cloud Run has built-in HTTPS at *.run.app, use custom domain mapping instead
