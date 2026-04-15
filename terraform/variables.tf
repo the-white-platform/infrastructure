@@ -232,3 +232,19 @@ variable "budget_alert_email" {
   type        = string
   default     = ""
 }
+
+# ---------------------------------------------------------------------------
+# Payload CMS media bucket (persists uploads across Cloud Run deploys)
+# ---------------------------------------------------------------------------
+
+variable "enable_payload_media_bucket" {
+  description = "Create a GCS bucket for Payload CMS media uploads"
+  type        = bool
+  default     = true
+}
+
+variable "payload_media_bucket_name" {
+  description = "GCS bucket name for Payload media (defaults to <project>-payload-media)"
+  type        = string
+  default     = ""
+}

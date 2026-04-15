@@ -31,17 +31,20 @@ domain_name = "thewhite.cool"  # Update with your production domain
 # Monitoring
 enable_monitoring = true
 
-# Environment variables
+# Environment variables (non-sensitive — safe to bake into the revision)
 env_vars = {
-  NODE_ENV                 = "production"
+  NODE_ENV                = "production"
   NEXT_TELEMETRY_DISABLED = "1"
-  GCP_PROJECT_ID           = "the-white-prod-481217"
-  GCP_REGION               = "asia-southeast1"
-  VTO_BUCKET_NAME          = "the-white-prod-481217-vto-images"
+  GCP_PROJECT_ID          = "the-white-prod-481217"
+  GCP_REGION              = "asia-southeast1"
+  ADMIN_EMAIL             = "admin@thewhite.vn"
+  PAYLOAD_MEDIA_BUCKET    = "the-white-prod-481217-payload-media" # read by storage-gcs adapter
 }
 
-# Secrets from Secret Manager
-# Database is now Neon (free tier) — connection string in Secret Manager
+# Secrets from Secret Manager — containers are created by secrets.tf.
+# Values are populated out-of-band (`gcloud secrets versions add …`) so no
+# plaintext lives in Terraform state.
+# Database is Neon (free tier) — connection string stored as DATABASE_URI.
 secrets = {
   DATABASE_URI = {
     secret_name = "DATABASE_URI"
@@ -57,6 +60,22 @@ secrets = {
   }
   GEMINI_API_KEY = {
     secret_name = "GEMINI_API_KEY"
+    version     = "latest"
+  }
+  GOOGLE_CLIENT_ID = {
+    secret_name = "GOOGLE_CLIENT_ID"
+    version     = "latest"
+  }
+  GOOGLE_CLIENT_SECRET = {
+    secret_name = "GOOGLE_CLIENT_SECRET"
+    version     = "latest"
+  }
+  RESEND_API_KEY = {
+    secret_name = "RESEND_API_KEY"
+    version     = "latest"
+  }
+  ADMIN_PASSWORD = {
+    secret_name = "ADMIN_PASSWORD"
     version     = "latest"
   }
 }
@@ -89,3 +108,7 @@ cloud_armor_rate_limit_threshold = 100
 
 # Billing
 billing_account_id = "015F7D-99EE6C-0A30FB"
+
+# Payload CMS media bucket
+enable_payload_media_bucket = true
+payload_media_bucket_name   = "" # empty → defaults to <project>-payload-media
