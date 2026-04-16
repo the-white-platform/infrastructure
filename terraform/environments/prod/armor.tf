@@ -70,9 +70,9 @@ resource "google_compute_region_network_endpoint_group" "main" {
 resource "google_compute_backend_service" "main" {
   count = var.enable_cloud_armor ? 1 : 0
 
-  name        = "${var.service_name}-backend"
-  protocol    = "HTTP"
-  port_name   = "http"
+  name      = "${var.service_name}-backend"
+  protocol  = "HTTP"
+  port_name = "http"
 
   backend {
     group = google_compute_region_network_endpoint_group.main[0].id

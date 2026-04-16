@@ -6,7 +6,7 @@ variable "project_id" {
 variable "region" {
   description = "GCP region for resources"
   type        = string
-  default     = "asia-southeast1"  # Singapore - closest to Vietnam
+  default     = "asia-southeast1" # Singapore - closest to Vietnam
 }
 
 variable "environment" {

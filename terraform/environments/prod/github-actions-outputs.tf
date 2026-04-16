@@ -12,7 +12,7 @@ output "github_actions_service_account" {
 
 output "github_actions_wif_setup_instructions" {
   description = "Instructions for setting up GitHub secrets"
-  value = <<-EOT
+  value       = <<-EOT
     Add these secrets to GitHub (organization-level recommended):
     
     Organization: https://github.com/organizations/the-white-platform/settings/secrets/actions

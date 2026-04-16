@@ -4,7 +4,7 @@
 
 # Random password generation if not provided
 resource "random_password" "db_password" {
-  count = var.enable_cloud_sql && var.db_password == "" ? 1 : 0
+  count   = var.enable_cloud_sql && var.db_password == "" ? 1 : 0
   length  = 16
   special = false # Avoid special chars that might break URL connection strings easily
 }
@@ -26,19 +26,19 @@ resource "google_sql_database_instance" "main" {
 
   settings {
     tier = var.db_tier
-    
+
     # Enable public IP for now (simplest), restrict via authorized networks if needed
     # Ideally should use Private Service Connect or Private IP with VPC Peering
     ip_configuration {
-      ipv4_enabled = true 
+      ipv4_enabled = true
     }
 
-     # Automatic backups
+    # Automatic backups
     backup_configuration {
-      enabled = true
+      enabled    = true
       start_time = "02:00" # 2 AM
     }
-    
+
     # Maintenance window
     maintenance_window {
       day  = 7 # Sunday
@@ -71,7 +71,7 @@ resource "google_secret_manager_secret" "generated_db_uri" {
   count = var.enable_cloud_sql ? 1 : 0
 
   secret_id = "GENERATED_DATABASE_URI_${upper(var.environment)}"
-  
+
   replication {
     user_managed {
       replicas {

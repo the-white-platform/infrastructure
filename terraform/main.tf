@@ -47,7 +47,7 @@ resource "google_cloud_run_service" "main" {
           for_each = merge(
             var.env_vars,
             {
-              NODE_ENV                 = "production"
+              NODE_ENV                = "production"
               NEXT_TELEMETRY_DISABLED = "1"
             }
           )
@@ -87,14 +87,14 @@ resource "google_cloud_run_service" "main" {
       }
 
       container_concurrency = 80
-      timeout_seconds      = var.timeout_seconds
-      service_account_name = google_service_account.cloud_run.email
+      timeout_seconds       = var.timeout_seconds
+      service_account_name  = google_service_account.cloud_run.email
     }
 
     metadata {
       annotations = {
-        "autoscaling.knative.dev/minScale"      = tostring(var.min_instances)
-        "autoscaling.knative.dev/maxScale"      = tostring(var.max_instances)
+        "autoscaling.knative.dev/minScale"         = tostring(var.min_instances)
+        "autoscaling.knative.dev/maxScale"         = tostring(var.max_instances)
         "run.googleapis.com/execution-environment" = var.execution_environment
 
         # VPC connector if specified
@@ -192,8 +192,8 @@ resource "google_cloud_run_domain_mapping" "main" {
   }
 
   spec {
-    route_name = google_cloud_run_service.main.name
-    force_override = true  # Force override if domain is mapped elsewhere
+    route_name     = google_cloud_run_service.main.name
+    force_override = true # Force override if domain is mapped elsewhere
   }
 }
 
@@ -322,10 +322,12 @@ resource "google_storage_bucket" "vto_images" {
   depends_on = [google_project_service.required_apis]
 }
 
-# Grant Vertex AI user role to Cloud Run service account
+# Grant Vertex AI user role to Cloud Run service account.
+# Unconditionally applied: Vertex AI now backs the Wolfies chat, the
+# Smart Size Picker, and VTO image generation — it is no longer an
+# optional feature. The `enable_vertex_vto` flag still gates the
+# (unused) GCS bucket resources below.
 resource "google_project_iam_member" "cloud_run_vertex_ai_user" {
-  count = var.enable_vertex_vto ? 1 : 0
-
   project = var.project_id
   role    = "roles/aiplatform.user"
   member  = "serviceAccount:${google_service_account.cloud_run.email}"
