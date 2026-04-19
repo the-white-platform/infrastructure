@@ -70,12 +70,24 @@ secrets = {
     secret_name = "GOOGLE_CLIENT_SECRET"
     version     = "latest"
   }
+  FACEBOOK_CLIENT_ID = {
+    secret_name = "FACEBOOK_CLIENT_ID"
+    version     = "latest"
+  }
+  FACEBOOK_CLIENT_SECRET = {
+    secret_name = "FACEBOOK_CLIENT_SECRET"
+    version     = "latest"
+  }
   RESEND_API_KEY = {
     secret_name = "RESEND_API_KEY"
     version     = "latest"
   }
   ADMIN_PASSWORD = {
     secret_name = "ADMIN_PASSWORD"
+    version     = "latest"
+  }
+  NEXT_PUBLIC_GA_ID = {
+    secret_name = "NEXT_PUBLIC_GA_ID"
     version     = "latest"
   }
 }

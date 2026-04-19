@@ -14,8 +14,11 @@ locals {
     "GEMINI_API_KEY",
     "GOOGLE_CLIENT_ID",
     "GOOGLE_CLIENT_SECRET",
+    "FACEBOOK_CLIENT_ID",
+    "FACEBOOK_CLIENT_SECRET",
     "RESEND_API_KEY",
     "ADMIN_PASSWORD",
+    "NEXT_PUBLIC_GA_ID",
     # DATABASE_URI is created elsewhere (sql.tf when Cloud SQL is enabled, or
     # populated manually when pointing at Neon/Supabase). Leave it out here.
   ]
