@@ -96,11 +96,13 @@ resource "google_cloud_run_service" "main" {
         "autoscaling.knative.dev/minScale"         = tostring(var.min_instances)
         "autoscaling.knative.dev/maxScale"         = tostring(var.max_instances)
         "run.googleapis.com/execution-environment" = var.execution_environment
-        # Keep CPU allocated even without requests, otherwise the
-        # warm instance throttles to near-zero between requests
-        # and cold-starts the JIT / DB pool on the next hit —
-        # defeats the whole purpose of min_instances=1.
-        "run.googleapis.com/cpu-throttling" = "false"
+        # CPU throttling stays on (default). min_instances=1 keeps
+        # a warm container alive (DB pool intact, post-cold-JIT
+        # state in memory) so the first request after idle is a
+        # ~3-5 s throttled-CPU hit instead of the 100+ s cold
+        # start we saw on 2026-04-22 / 2026-04-23. Full
+        # always-allocated CPU costs ~5× more per month and the
+        # extra few seconds don't matter for the admin UX.
 
         # VPC connector if specified
         "run.googleapis.com/vpc-access-connector" = var.vpc_connector_name != "" ? var.vpc_connector_name : null
