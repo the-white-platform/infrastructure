@@ -15,8 +15,13 @@ container_port  = 3000
 memory = "1Gi"
 cpu    = "1"
 
-# Scaling configuration (min=0 saves ~500K VND/month — cold start is ~2-3s)
-min_instances = 0
+# Scaling configuration. Keep 1 warm instance so admin login + API
+# requests don't hit the 100+ second cold-start stalls we saw on
+# 2026-04-22 and 2026-04-23 — Payload auth initialization against
+# Cloud SQL on a freshly-spawned container is the slow path, not
+# the code itself. ~500K VND/month premium is cheaper than being
+# offline from cold-start whenever traffic dips.
+min_instances = 1
 max_instances = 5
 
 # Timeout
